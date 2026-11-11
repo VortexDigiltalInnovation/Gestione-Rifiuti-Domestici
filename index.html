@@ -62,7 +62,7 @@
 
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl">
                 <h2 class="text-lg font-bold text-amber-400 mb-2">Sincronizzazione Google Calendar</h2>
-                <p class="text-xs text-slate-400 mb-4">Crea automaticamente gli eventi dalle 07:00 alle 23:59 del giorno prima per ogni ritiro programmato.</p>
+                <p class="text-xs text-slate-400 mb-4">Crea automaticamente gli eventi sincronizzati con codici colore dedicati per ciascun rifiuto.</p>
                 <div class="flex gap-3">
                     <button id="authButton" onclick="handleAuthClick()" class="flex-1 bg-blue-600 hover:bg-blue-500 font-bold py-3 px-4 rounded-xl shadow transition text-sm">
                         Collega Google
@@ -90,8 +90,9 @@
 
         <!-- TAB: SETTINGS & NOTIFICATIONS -->
         <section id="tab-settings" class="space-y-4 hidden">
+            <!-- NOTIFICHE CON SELEZIONE ORARIO PERSONALIZZATO -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-4">
-                <h2 class="text-lg font-bold text-purple-400">Notifiche Push Locali</h2>
+                <h2 class="text-lg font-bold text-purple-400">Notifiche Push & Orario Avviso</h2>
                 <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700">
                     <div>
                         <p class="font-bold text-sm">Abilita Notifiche</p>
@@ -101,8 +102,9 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Orario Promemoria</label>
-                    <input type="time" id="notificationTime" value="07:00" onchange="saveNotificationTime(this)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-100 font-bold">
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Seleziona Orario della Notifica</label>
+                    <input type="time" id="notificationTime" value="07:00" onchange="saveNotificationTime(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-100 font-bold">
+                    <p class="text-xs text-slate-400 mt-1">L'avviso su Google Calendar e la notifica push scatteranno all'orario impostato del giorno prima del ritiro.</p>
                 </div>
 
                 <button onclick="sendTestNotification()" class="w-full bg-purple-600 hover:bg-purple-500 font-bold py-3 rounded-xl transition text-sm shadow">
@@ -110,6 +112,22 @@
                 </button>
             </div>
 
+            <!-- BACKUP & RIPRISTINO CONFIGURAZIONE (JSON) -->
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-4">
+                <h2 class="text-lg font-bold text-cyan-400">Backup & Ripristino (JSON)</h2>
+                <p class="text-xs text-slate-400">Esporta o importa la configurazione dei tuoi orari per non perderla mai.</p>
+                <div class="flex gap-3">
+                    <button onclick="exportConfigJSON()" class="flex-1 bg-cyan-700 hover:bg-cyan-600 font-bold py-3 px-3 rounded-xl transition text-xs shadow">
+                        💾 Esporta JSON
+                    </button>
+                    <label class="flex-1 bg-slate-700 hover:bg-slate-600 font-bold py-3 px-3 rounded-xl transition text-xs text-center cursor-pointer shadow">
+                        📂 Importa JSON
+                        <input type="file" id="importJsonFile" accept=".json" onchange="importConfigJSON(event)" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <!-- GESTIONE FESTIVI -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-4">
                 <h2 class="text-lg font-bold text-red-400">Gestione Festivi Italiani</h2>
                 <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700">
@@ -137,22 +155,24 @@
             { id: 0, name: 'Domenica' }
         ];
 
+        // Google Calendar API colorId mapping:
+        // 5: Yellow (Plastica), 8: Graphite/Black (Indifferenziato), 6: Orange/Brown (Organico), 9: Blue (Carta), 10: Green/Emerald (Vetro)
         const trashTypes = [
-            { id: 'indifferenziato', name: 'Indifferenziato', icon: '🗑️', color: 'bg-slate-700' },
-            { id: 'organico', name: 'Organico / Umido', icon: '🍌', color: 'bg-amber-800' },
-            { id: 'plastica', name: 'Plastica', icon: '🍼', color: 'bg-yellow-600' },
-            { id: 'carta', name: 'Carta e Cartone', icon: '📦', color: 'bg-blue-700' },
-            { id: 'vetro', name: 'Vetro e Lattine', icon: '🍾', color: 'bg-emerald-700' }
+            { id: 'indifferenziato', name: 'Indifferenziato', icon: '🗑️', color: 'bg-slate-700', gColorId: '8' },
+            { id: 'organico', name: 'Organico / Umido', icon: '🍌', color: 'bg-amber-800', gColorId: '6' },
+            { id: 'plastica', name: 'Plastica', icon: '🍼', color: 'bg-yellow-600', gColorId: '5' },
+            { id: 'carta', name: 'Carta e Cartone', icon: '📦', color: 'bg-blue-700', gColorId: '9' },
+            { id: 'vetro', name: 'Vetro e Lattine', icon: '🍾', color: 'bg-emerald-700', gColorId: '10' }
         ];
 
         let userSchedule = JSON.parse(localStorage.getItem('eco_schedule')) || {
-            1: { type: 'organico', freq: 'all' },
-            2: { type: 'plastica', freq: 'all' },
-            3: { type: 'carta', freq: 'all' },
-            4: { type: 'organico', freq: 'all' },
-            5: { type: 'vetro', freq: 'all' },
-            6: { type: 'indifferenziato', freq: 'all' },
-            0: { type: 'none', freq: 'all' }
+            1: { type: 'organico' },
+            2: { type: 'plastica' },
+            3: { type: 'carta' },
+            4: { type: 'organico' },
+            5: { type: 'vetro' },
+            6: { type: 'indifferenziato' },
+            0: { type: 'none' }
         };
 
         let tokenClient;
@@ -186,7 +206,7 @@
             const container = document.getElementById('scheduleConfigList');
             container.innerHTML = '';
             days.forEach(d => {
-                const current = userSchedule[d.id] || { type: 'none', freq: 'all' };
+                const current = userSchedule[d.id] || { type: 'none' };
                 let optionsHtml = '<option value="none">Nessun ritiro</option>';
                 trashTypes.forEach(t => {
                     optionsHtml += `<option value="${t.id}" ${current.type === t.id ? 'selected' : ''}>${t.icon} ${t.name}</option>`;
@@ -207,7 +227,7 @@
         }
 
         function updateDaySchedule(dayId, field, val) {
-            if (!userSchedule[dayId]) userSchedule[dayId] = { type: 'none', freq: 'all' };
+            if (!userSchedule[dayId]) userSchedule[dayId] = { type: 'none' };
             userSchedule[dayId][field] = val;
         }
 
@@ -218,7 +238,7 @@
         }
 
         function getTrashInfo(typeId) {
-            return trashTypes.find(t => t.id === typeId) || { name: 'Nessuno', icon: '🚫', color: 'bg-slate-800' };
+            return trashTypes.find(t => t.id === typeId) || { name: 'Nessuno', icon: '🚫', color: 'bg-slate-800', gColorId: '8' };
         }
 
         function isItalianHoliday(date) {
@@ -226,11 +246,9 @@
             const m = date.getMonth() + 1;
             const y = date.getFullYear();
 
-            // Fixed holidays
             const fixed = ['1-1', '6-1', '25-4', '1-5', '2-6', '15-8', '1-11', '8-12', '25-12', '26-12'];
             if (fixed.includes(`${d}-${m}`)) return true;
 
-            // Easter calculation
             const a = y % 19;
             const b = Math.floor(y / 100);
             const c = y % 100;
@@ -258,7 +276,6 @@
 
         function updateDashboard() {
             const now = new Date();
-            
             const tomorrow = new Date(now);
             tomorrow.setDate(now.getDate() + 1);
             const tomorrowDay = tomorrow.getDay();
@@ -314,7 +331,9 @@
                 return;
             }
 
-            alert("Sincronizzazione eventi Google Calendar avviata (verranno creati gli eventi per le prossime 4 settimane).");
+            const userNotifTime = localStorage.getItem('eco_notif_time') || "07:00";
+            alert(`Sincronizzazione eventi Google Calendar avviata (avvisi impostati alle ${userNotifTime} del giorno prima con codici colore).`);
+            
             const now = new Date();
             for (let i = 0; i < 28; i++) {
                 let d = new Date(now);
@@ -331,9 +350,10 @@
                     let eventDateStr = d.toISOString().split('T')[0];
 
                     let event = {
-                        summary: `Stasera: ${trashInfo.name}`,
+                        summary: `Stasera fuori: ${trashInfo.name} ${trashInfo.icon}`,
                         description: `Promemoria automatico EcoFlow: Esporre ${trashInfo.name} stasera per il ritiro di domani.`,
-                        start: { dateTime: `${eventDateStr}T07:00:00+01:00`, timeZone: 'Europe/Rome' },
+                        colorId: trashInfo.gColorId,
+                        start: { dateTime: `${eventDateStr}T${userNotifTime}:00+01:00`, timeZone: 'Europe/Rome' },
                         end: { dateTime: `${eventDateStr}T23:59:00+01:00`, timeZone: 'Europe/Rome' }
                     };
 
@@ -351,14 +371,19 @@
                     }
                 }
             }
-            alert("Sincronizzazione completata con successo!");
+            alert("Sincronizzazione completata con successo su Google Calendar!");
         }
 
         function loadSettings() {
             const savedSize = localStorage.getItem('eco_fontsize');
             if (savedSize) setFontSize(savedSize);
-            const savedTime = localStorage.getItem('eco_notif_time');
-            if (savedTime) document.getElementById('notificationTime').value = savedTime;
+            const savedTime = localStorage.getItem('eco_notif_time') || '07:00';
+            document.getElementById('notificationTime').value = savedTime;
+        }
+
+        function saveNotificationTime(val) {
+            localStorage.setItem('eco_notif_time', val);
+            alert(`Orario notifica salvato: ${val}`);
         }
 
         function togglePushNotifications(el) {
@@ -372,15 +397,12 @@
             }
         }
 
-        function saveNotificationTime(el) {
-            localStorage.setItem('eco_notif_time', el.value);
-        }
-
         function sendTestNotification() {
+            const userNotifTime = localStorage.getItem('eco_notif_time') || "07:00";
             if (Notification.permission === 'granted') {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification('EcoFlow Trash Manager 🗑️', {
-                        body: 'Notifica di prova: Ricordati di esporre la Plastica stasera!',
+                        body: `Notifica di prova (impostata per le ${userNotifTime}): Ricordati di esporre la Plastica 🍼 stasera!`,
                         icon: 'icon-192.png',
                         badge: 'icon-192.png',
                         vibrate: [200, 100, 200]
@@ -393,6 +415,48 @@
 
         function toggleHolidays(el) {
             updateDashboard();
+        }
+
+        // EXPORT / IMPORT JSON CONFIGURATION
+        function exportConfigJSON() {
+            const config = {
+                userSchedule: userSchedule,
+                notificationTime: localStorage.getItem('eco_notif_time') || '07:00',
+                fontSize: localStorage.getItem('eco_fontsize') || 'md'
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "ecoflow_trash_config.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importConfigJSON(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.userSchedule) {
+                        userSchedule = imported.userSchedule;
+                        localStorage.setItem('eco_schedule', JSON.stringify(userSchedule));
+                    }
+                    if (imported.notificationTime) {
+                        localStorage.setItem('eco_notif_time', imported.notificationTime);
+                        document.getElementById('notificationTime').value = imported.notificationTime;
+                    }
+                    if (imported.fontSize) {
+                        setFontSize(imported.fontSize);
+                    }
+                    initScheduleUI();
+                    updateDashboard();
+                    alert("Configurazione ripristinata con successo dal file JSON!");
+                } catch (err) {
+                    alert("Errore nel formato del file JSON caricato.");
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
         }
     </script>
 </body>
