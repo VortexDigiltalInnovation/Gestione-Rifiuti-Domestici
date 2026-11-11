@@ -281,7 +281,7 @@
                             <button onclick="removeScheduleItem(${d.id}, ${index})" class="absolute top-2 right-2 text-red-400 hover:text-red-300 font-bold text-xs px-2 py-1 bg-slate-800 rounded-lg">✕ Rimuovi</button>
                             <div class="flex justify-between items-center font-bold text-sm text-emerald-400 pr-20">
                                 <span>Rifiuto #${index + 1}</span>
-                                <select onchange="updateItemField(${d.id}, ${index}, 'type', this.value)" class="bg-slate-850 bg-slate-800 text-slate-100 p-2 rounded-lg border border-slate-700 text-xs">
+                                <select onchange="updateItemField(${d.id}, ${index}, 'type', this.value)" class="bg-slate-800/80 bg-slate-800 text-slate-100 p-2 rounded-lg border border-slate-700 text-xs">
                                     ${optionsHtml}
                                 </select>
                             </div>
@@ -304,7 +304,7 @@
                 });
 
                 let div = document.createElement('div');
-                div.className = "bg-slate-850 bg-slate-800/50 p-4 rounded-2xl border border-slate-700 space-y-3";
+                div.className = "bg-slate-800/80 bg-slate-800/50 p-4 rounded-2xl border border-slate-700 space-y-3";
                 div.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-emerald-400 text-sm">${d.name}</span>
