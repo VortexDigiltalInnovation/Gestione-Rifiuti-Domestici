@@ -1,6 +1,6 @@
 {
-  "name": "EcoFlow Trash Manager",
-  "short_name": "EcoFlow",
+  "name": "Gestione Rifiuti",
+  "short_name": "Rifiuti",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f172a",

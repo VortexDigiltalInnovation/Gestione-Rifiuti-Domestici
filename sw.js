@@ -9,7 +9,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('push', (e) => {
   const data = e.data ? e.data.text() : 'Promemoria spazzatura';
   e.waitUntil(
-    self.registration.showNotification('EcoFlow Trash Manager 🗑️', {
+    self.registration.showNotification('Gestione Rifiuti 🗑️', {
       body: data,
       icon: 'icon-192.png',
       badge: 'icon-192.png'

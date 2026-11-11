@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoFlow Trash Manager</title>
+    <title>Gestione Rifiuti</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#10b981">
     <link rel="apple-touch-icon" href="icon-192.png">
@@ -22,11 +22,11 @@
         <header class="flex justify-between items-center mb-6 bg-slate-800 p-4 rounded-2xl shadow-lg border border-slate-700">
             <div>
                 <h1 class="text-xl font-bold text-emerald-400 flex items-center gap-2">
-                    🗑️ EcoFlow Manager
+                    🗑️ Gestione Rifiuti
                 </h1>
-                <p class="text-xs text-slate-400">Gestione Calendario Spazzatura</p>
+                <p class="text-xs text-slate-400">Calendario e Notifiche Spazzatura</p>
             </div>
-            <!-- Font Size & Auth Controls -->
+            <!-- Font Size Controls -->
             <div class="flex items-center gap-2">
                 <div class="flex bg-slate-900 rounded-lg p-1 border border-slate-700 text-xs">
                     <button onclick="setFontSize('sm')" class="px-2 py-1 rounded hover:bg-slate-700 font-bold">A-</button>
@@ -155,8 +155,6 @@
             { id: 0, name: 'Domenica' }
         ];
 
-        // Google Calendar API colorId mapping:
-        // 5: Yellow (Plastica), 8: Graphite/Black (Indifferenziato), 6: Orange/Brown (Organico), 9: Blue (Carta), 10: Green/Emerald (Vetro)
         const trashTypes = [
             { id: 'indifferenziato', name: 'Indifferenziato', icon: '🗑️', color: 'bg-slate-700', gColorId: '8' },
             { id: 'organico', name: 'Organico / Umido', icon: '🍌', color: 'bg-amber-800', gColorId: '6' },
@@ -351,7 +349,7 @@
 
                     let event = {
                         summary: `Stasera fuori: ${trashInfo.name} ${trashInfo.icon}`,
-                        description: `Promemoria automatico EcoFlow: Esporre ${trashInfo.name} stasera per il ritiro di domani.`,
+                        description: `Promemoria automatico Gestione Rifiuti: Esporre ${trashInfo.name} stasera per il ritiro di domani.`,
                         colorId: trashInfo.gColorId,
                         start: { dateTime: `${eventDateStr}T${userNotifTime}:00+01:00`, timeZone: 'Europe/Rome' },
                         end: { dateTime: `${eventDateStr}T23:59:00+01:00`, timeZone: 'Europe/Rome' }
@@ -401,7 +399,7 @@
             const userNotifTime = localStorage.getItem('eco_notif_time') || "07:00";
             if (Notification.permission === 'granted') {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification('EcoFlow Trash Manager 🗑️', {
+                    reg.showNotification('Gestione Rifiuti 🗑️', {
                         body: `Notifica di prova (impostata per le ${userNotifTime}): Ricordati di esporre la Plastica 🍼 stasera!`,
                         icon: 'icon-192.png',
                         badge: 'icon-192.png',
@@ -417,7 +415,6 @@
             updateDashboard();
         }
 
-        // EXPORT / IMPORT JSON CONFIGURATION
         function exportConfigJSON() {
             const config = {
                 userSchedule: userSchedule,
@@ -427,7 +424,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "ecoflow_trash_config.json");
+            downloadAnchor.setAttribute("download", "gestione_rifiuti_config.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
