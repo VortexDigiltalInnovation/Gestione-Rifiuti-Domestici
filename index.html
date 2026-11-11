@@ -227,6 +227,15 @@
         let tokenClient;
         let accessToken = null;
 
+        
+        function triggerHaptic(pattern = 30) {
+            if (navigator.vibrate) {
+                try {
+                    navigator.vibrate(pattern);
+                } catch(e) {}
+            }
+        }
+    
         window.onload = function() {
             initScheduleUI();
             updateDashboard();
