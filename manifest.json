@@ -1,10 +1,10 @@
 {
   "name": "Raccolta Smart",
-  "short_name": "Raccolta Smart",
-  "start_url": "index.html",
+  "short_name": "RaccoltaSmart",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#10b981",
+  "background_color": "#030712",
+  "theme_color": "#059669",
   "icons": [
     {
       "src": "icon-192.png",
