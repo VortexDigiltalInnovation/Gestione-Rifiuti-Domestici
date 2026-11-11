@@ -7,12 +7,13 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('push', (e) => {
-  const data = e.data ? e.data.text() : 'Promemoria spazzatura';
+  const data = e.data ? e.data.text() : 'Promemoria raccolta domestica';
   e.waitUntil(
-    self.registration.showNotification('Gestione Rifiuti 🗑️', {
+    self.registration.showNotification('Raccolta Smart ♻️', {
       body: data,
       icon: 'icon-192.png',
-      badge: 'icon-192.png'
+      badge: 'icon-192.png',
+      vibrate: [200, 100, 200]
     })
   );
 });

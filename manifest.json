@@ -1,6 +1,6 @@
 {
-  "name": "Gestione Rifiuti",
-  "short_name": "Rifiuti",
+  "name": "Raccolta Smart",
+  "short_name": "Raccolta Smart",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f172a",
