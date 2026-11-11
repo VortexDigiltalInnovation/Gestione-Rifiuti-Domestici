@@ -21,12 +21,9 @@
         <!-- Header -->
         <header class="flex justify-between items-center mb-6 bg-slate-800 p-4 rounded-2xl shadow-lg border border-slate-700">
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-bold text-emerald-400 flex items-center gap-2">
+                <h1 class="text-xl font-bold text-emerald-400 flex items-center gap-2">
                     ♻️ Raccolta Smart
                 </h1>
-                    <span class="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-mono px-2 py-0.5 rounded-full">v2.0</span>
-                </div>
                 <p class="text-xs text-slate-400">Calendario e Notifiche Domestiche</p>
             </div>
             <!-- Font Size Controls -->
@@ -93,33 +90,19 @@
             </div>
         </section>
 
-        <!-- TAB: ECO-GUIDA CON SCANSIONE FOTOGRAFICA (Punto 3) -->
+        <!-- TAB: ECO-GUIDA (Punto 3) -->
         <section id="tab-guide" class="space-y-4 hidden">
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-4">
                 <h2 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
-                    🔍 Eco-Guida & Scansione IA
+                    🔍 Eco-Guida & Dizionario Rifiuti
                 </h2>
-                <p class="text-xs text-slate-400">Cerca nel dizionario o scatta una foto a un oggetto per identificarlo istantaneamente.</p>
+                <p class="text-xs text-slate-400">Cerca un materiale o un oggetto per scoprire immediatamente dove conferirlo correttamente.</p>
                 
-                <!-- Camera / Photo Scan Button -->
-                <div class="flex gap-2">
-                    <input type="text" id="searchInput" oninput="searchGuide(this.value)" placeholder="Es. carta d'alluminio, tetra pak, pile..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-100 text-sm focus:outline-none focus:border-emerald-500">
-                    <label class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-3 rounded-xl cursor-pointer flex items-center justify-center text-sm shadow transition shrink-0">
-                        📸 Scatta
-                        <input type="file" accept="image/*" capture="environment" onchange="handleImageScan(event)" class="hidden">
-                    </label>
+                <div>
+                    <input type="text" id="searchInput" oninput="searchGuide(this.value)" placeholder="Es. carta d'alluminio, tetra pak, pile..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-100 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
 
-                <!-- Scan Results Modal / Box -->
-                <div id="scanResultCard" class="hidden bg-emerald-950/60 border border-emerald-500/50 rounded-xl p-4 space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-emerald-400 text-sm flex items-center gap-2">✨ Risultato Scansione IA</span>
-                        <button onclick="closeScanResult()" class="text-xs text-slate-400 hover:text-white">✕ Chiudi</button>
-                    </div>
-                    <div id="scanResultContent" class="text-xs text-slate-200"></div>
-                </div>
-
-                <div id="searchResults" class="space-y-2 max-h-80 overflow-y-auto">
+                <div id="searchResults" class="space-y-2 max-h-96 overflow-y-auto">
                     <!-- Default items list -->
                 </div>
             </div>
@@ -202,15 +185,15 @@
 
         // Dizionario Eco-Guida (Punto 3)
         const ecoDictionary = [
-            { item: 'Carta d\'alluminio / Domopak', category: 'Plastica e Metalli', icon: '🍼', note: 'Va conferito insieme ai metalli/plastica (verificare disposizioni locali).' },
+            { item: 'Carta d'alluminio / Domopak', category: 'Plastica e Metalli', icon: '🍼', note: 'Va conferito insieme ai metalli/plastica (verificare disposizioni locali).' },
             { item: 'Tetra Pak (Cartoni latte/succo)', category: 'Carta o Plastica/Tetra Pak', icon: '📦', note: 'Spesso riciclabile con carta o imballaggi leggeri in base al comune.' },
             { item: 'Pile esauste', category: 'Raccolta dedicata', icon: '🔋', note: 'Negli appositi contenitori presso i rivenditori o isole ecologiche.' },
             { item: 'Farmaci scaduti', category: 'Raccolta dedicata', icon: '💊', note: 'Negli appositi contenitori esterni alle farmacie.' },
-            { item: 'Oneri di cucina / Olio esausto', category: 'Raccolta dedicata', icon: '🛢️', note: 'Portare all\'isola ecologica, mai versare nel lavandino.' },
+            { item: 'Oneri di cucina / Olio esausto', category: 'Raccolta dedicata', icon: '🛢️', note: 'Portare all'isola ecologica, mai versare nel lavandino.' },
             { item: 'Pannolini e Pannoloni', category: 'Indifferenziato (o sacco dedicato)', icon: '🗑️', note: 'Salvo attivazione di servizi specifici pannolini nel comune.' },
-            { item: 'Ceramica e Vetro finestra', category: 'Indifferenziato', icon: '🗑️', note: 'Non fondono come il vetro normale, vanno nell\'indifferenziato.' },
+            { item: 'Ceramica e Vetro finestra', category: 'Indifferenziato', icon: '🗑️', note: 'Non fondono come il vetro normale, vanno nell'indifferenziato.' },
             { item: 'Scontrini fiscali', category: 'Indifferenziato', icon: '🗑️', note: 'Carta termica: non va nella carta.' },
-            { item: 'Scatole della pizza unte', category: 'Organico (se compostabili) o Indifferenziato', icon: '🍌', note: 'Se molto sporche di unto vanno nell\'indifferenziato o umido se carta ecologica.' }
+            { item: 'Scatole della pizza unte', category: 'Organico (se compostabili) o Indifferenziato', icon: '🍌', note: 'Se molto sporche di unto vanno nell'indifferenziato o umido se carta ecologica.' }
         ];
 
         // Multi-item schedule support: userSchedule[dayId] is an array of objects: { type: 'organico', freq: 'every', refDate: '' }
@@ -227,15 +210,6 @@
         let tokenClient;
         let accessToken = null;
 
-        
-        function triggerHaptic(pattern = 30) {
-            if (navigator.vibrate) {
-                try {
-                    navigator.vibrate(pattern);
-                } catch(e) {}
-            }
-        }
-    
         window.onload = function() {
             initScheduleUI();
             updateDashboard();
@@ -281,7 +255,7 @@
                             <button onclick="removeScheduleItem(${d.id}, ${index})" class="absolute top-2 right-2 text-red-400 hover:text-red-300 font-bold text-xs px-2 py-1 bg-slate-800 rounded-lg">✕ Rimuovi</button>
                             <div class="flex justify-between items-center font-bold text-sm text-emerald-400 pr-20">
                                 <span>Rifiuto #${index + 1}</span>
-                                <select onchange="updateItemField(${d.id}, ${index}, 'type', this.value)" class="bg-slate-800/80 bg-slate-800 text-slate-100 p-2 rounded-lg border border-slate-700 text-xs">
+                                <select onchange="updateItemField(${d.id}, ${index}, 'type', this.value)" class="bg-slate-850 bg-slate-800 text-slate-100 p-2 rounded-lg border border-slate-700 text-xs">
                                     ${optionsHtml}
                                 </select>
                             </div>
@@ -304,7 +278,7 @@
                 });
 
                 let div = document.createElement('div');
-                div.className = "bg-slate-800/80 bg-slate-800/50 p-4 rounded-2xl border border-slate-700 space-y-3";
+                div.className = "bg-slate-850 bg-slate-800/50 p-4 rounded-2xl border border-slate-700 space-y-3";
                 div.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-emerald-400 text-sm">${d.name}</span>
@@ -443,50 +417,6 @@
         }
 
         // --- ECO-GUIDA SEARCH (Punto 3) ---
-        
-        // --- SCANSIONE FOTOGRAFICA RAPIDA CON IA (Punto 3) ---
-        function handleImageScan(event) {
-            triggerHaptic([40, 60, 40]);
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const card = document.getElementById('scanResultCard');
-            const content = document.getElementById('scanResultContent');
-            
-            card.classList.remove('hidden');
-            content.innerHTML = `<div class="flex items-center gap-2 py-2"><span class="animate-spin">⏳</span> Analisi dell'immagine con IA in corso...</div>`;
-
-            // Simulate AI recognition based on random or typical household items for testing
-            setTimeout(() => {
-                const simulatedItems = [
-                    { item: 'Bottiglia in Plastica PET', category: 'Plastica', icon: '🍼', note: 'Svuotare, schiacciare e conferire nella Plastica.' },
-                    { item: 'Cartone della Pizza (Unto)', category: 'Indifferenziato (o Umido se compostabile)', icon: '🗑️', note: 'Se molto unto non va nella carta.' },
-                    { item: 'Lattina di Alluminio / Bibita', category: 'Plastica e Metalli', icon: '🥫', note: 'Ottimo riciclo metallico, conferire nell'apposito contenitore.' },
-                    { item: 'Flacone Detersivo', category: 'Plastica', icon: '🧴', note: 'Risciacquare leggermente prima del conferimento.' },
-                    { item: 'Giornale / Rivista in Carta', category: 'Carta e Cartone', icon: '📦', note: 'Piegare e conferire nella Carta.' }
-                ];
-                
-                const detected = simulatedItems[Math.floor(Math.random() * simulatedItems.length)];
-                
-                content.innerHTML = `
-                    <div class="flex items-start gap-3 mt-1">
-                        <span class="text-3xl">${detected.icon}</span>
-                        <div>
-                            <p class="font-bold text-emerald-300 text-sm">${detected.item}</p>
-                            <p class="font-semibold text-slate-100 mt-0.5">Destinazione: <span class="text-amber-300">${detected.category}</span></p>
-                            <p class="text-slate-300 text-xs mt-1">${detected.note}</p>
-                        </div>
-                    </div>
-                `;
-                triggerHaptic([30, 50, 30, 50]);
-            }, 1200);
-        }
-
-        function closeScanResult() {
-            triggerHaptic(20);
-            document.getElementById('scanResultCard').classList.add('hidden');
-        }
-
         function searchGuide(query) {
             const container = document.getElementById('searchResults');
             container.innerHTML = '';
