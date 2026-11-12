@@ -5,14 +5,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Raccolta Smart</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="icons/icon-192.png">
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="theme-color" content="#065f46">
     <meta name="color-scheme" content="dark">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Raccolta Smart">
-    <link rel="stylesheet" href="css/app.css">
+    <style>
+:root {
+    --bg: #020617; --card: #0f172a; --card2: #162036; --line: #1e293b; --line2: #334155;
+    --text: #f1f5f9; --mute: #94a3b8; --faint: #64748b;
+    --brand: #10b981; --brand-l: #34d399; --brand-d: #059669; --brand-dd: #047857;
+    --danger: #f87171; --warn: #fbbf24;
+}
+* { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+    background: var(--bg); color: var(--text);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--brand-l); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+/* Header */
+header {
+    position: sticky; top: 0; z-index: 40; background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+.wrap { max-width: 448px; margin: 0 auto; }
+.header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; color: var(--brand-l); }
+.brand .logo { font-size: 1.4rem; line-height: 1; }
+.ver {
+    font-size: .72rem; font-weight: 700; color: var(--mute); background: var(--card2);
+    border: 1px solid var(--line2); border-radius: 999px; padding: 2px 8px; letter-spacing: .02em;
+}
+.pill {
+    font-size: .75rem; padding: 4px 10px; border-radius: 999px; background: var(--card2);
+    color: var(--mute); border: 1px solid var(--line2); white-space: nowrap;
+}
+.pill.ok { color: var(--brand-l); border-color: var(--brand-dd); }
+
+main { max-width: 448px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+section { display: flex; flex-direction: column; gap: 16px; }
+
+/* Cards */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+.card.tight { padding: 14px; }
+.card.row { flex-direction: row; }
+.card-title { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); display: flex; gap: 6px; align-items: center; }
+h2.page-title { font-size: 1.05rem; font-weight: 700; }
+.row { display: flex; align-items: center; gap: 12px; }
+.row.between { justify-content: space-between; }
+.grow { flex: 1; min-width: 0; }
+.stack { display: flex; flex-direction: column; gap: 8px; }
+.muted { color: var(--mute); font-size: .8rem; }
+.faint { color: var(--faint); font-size: .8rem; font-style: italic; }
+.strong { font-weight: 700; }
+.warn { color: var(--warn); }
+.danger-text { color: var(--danger); }
+
+.trash { display: flex; gap: 12px; align-items: flex-start; padding: 4px 0; }
+.trash .ico { font-size: 1.7rem; line-height: 1.1; }
+.trash .nm { font-weight: 700; font-size: 1.05rem; }
+.trash .ds { font-size: .8rem; color: var(--mute); margin-top: 2px; }
+.banner { display: flex; gap: 10px; align-items: flex-start; font-size: 1rem; font-weight: 500; }
+.banner .ico { font-size: 1.4rem; }
+
+.upc { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: .9rem; }
+.upc:first-of-type { border-top: 0; }
+.upc .when { color: var(--mute); white-space: nowrap; min-width: 92px; }
+.upc .what { text-align: right; }
+
+/* Buttons */
+.btn {
+    min-height: 44px; padding: 8px 16px; border-radius: 12px; border: 1px solid transparent;
+    font-weight: 700; font-size: .85rem; cursor: pointer; transition: background .15s, transform .05s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; text-align: center;
+}
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: var(--brand-d); color: #fff; }
+.btn-primary:hover { background: #10b981; }
+.btn-ghost { background: var(--card2); border-color: var(--line2); color: var(--text); }
+.btn-ghost:hover { background: #1e2b47; }
+.btn-danger { background: rgba(220,38,38,.15); border-color: rgba(185,28,28,.6); color: var(--danger); }
+.btn-danger:hover { background: rgba(220,38,38,.28); }
+.btn-sm { min-height: 40px; padding: 6px 12px; font-size: .8rem; }
+.btn-block { width: 100%; }
+.icon-btn { min-width: 44px; min-height: 44px; padding: 0; font-size: 1.1rem; }
+
+/* Form */
+label.lbl { display: block; font-size: .78rem; color: var(--mute); margin-bottom: 4px; }
+input[type=text], input[type=time], input[type=date], select, textarea {
+    width: 100%; min-height: 44px; background: var(--card2); border: 1px solid var(--line2);
+    border-radius: 10px; padding: 8px 10px; color: var(--text); font-size: 16px;
+}
+textarea { resize: vertical; min-height: 88px; }
+input:disabled { opacity: .5; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.switch { position: relative; display: inline-block; width: 52px; height: 30px; flex: none; }
+.switch input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
+.switch .track { position: absolute; inset: 0; background: var(--line2); border-radius: 999px; transition: background .2s; }
+.switch .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: #fff; border-radius: 50%; transition: transform .2s; }
+.switch input:checked + .track { background: var(--brand-d); }
+.switch input:checked + .track::after { transform: translateX(22px); }
+.switch input:focus-visible + .track { outline: 2px solid var(--brand-l); outline-offset: 2px; }
+
+/* Schedule */
+.day { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.day-name { font-weight: 800; color: var(--brand-l); }
+.item { background: var(--card2); border: 1px solid var(--line2); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+
+/* Guide */
+.type { display: flex; gap: 12px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.type .ico { font-size: 1.8rem; line-height: 1.1; }
+.type .actions { display: flex; gap: 6px; flex: none; }
+
+details { background: var(--card2); border: 1px solid var(--line2); border-radius: 12px; padding: 10px 12px; }
+summary { cursor: pointer; font-weight: 700; font-size: .85rem; min-height: 28px; }
+details[open] summary { margin-bottom: 8px; }
+ol.steps { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: .8rem; color: var(--mute); }
+code { background: #0b1220; border: 1px solid var(--line2); border-radius: 6px; padding: 1px 5px; font-size: .75rem; word-break: break-all; color: var(--brand-l); }
+
+/* Nav */
+nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--card);
+    border-top: 1px solid var(--line); padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+}
+nav .wrap { display: flex; gap: 4px; }
+nav button {
+    flex: 1; min-height: 48px; border: 0; border-radius: 10px; background: transparent; color: #cbd5e1;
+    font-size: .78rem; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+}
+nav button .ni { font-size: 1.15rem; line-height: 1; }
+nav button[aria-current=page] { background: var(--brand-d); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+
+/* Dialog */
+dialog {
+    border: 1px solid var(--line2); background: var(--card); color: var(--text); border-radius: 20px;
+    padding: 20px; width: min(92vw, 420px); max-height: 88vh; overflow: auto; margin: auto;
+}
+dialog::backdrop { background: rgba(0,0,0,.7); }
+dialog form, .dlg-body { display: flex; flex-direction: column; gap: 14px; }
+dialog h3 { font-size: 1.05rem; }
+.emoji-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.emoji-pick button { min-width: 40px; min-height: 40px; font-size: 1.25rem; background: var(--card2); border: 1px solid var(--line2); border-radius: 10px; cursor: pointer; }
+.emoji-pick button:hover { border-color: var(--brand); }
+.err { color: var(--danger); font-size: .8rem; min-height: 1em; }
+
+/* Toast */
+#toast {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(92px + env(safe-area-inset-bottom));
+    z-index: 100; background: #e2e8f0; color: #0f172a; padding: 10px 14px; border-radius: 12px; font-size: .85rem; font-weight: 600;
+    box-shadow: 0 6px 20px rgba(0,0,0,.5); max-width: min(92vw, 420px); display: flex; gap: 12px; align-items: center;
+}
+#toast button { background: none; border: 0; color: #047857; font-weight: 800; cursor: pointer; min-height: 32px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.hint-ok { color: var(--brand-l); }
+
+</style>
 </head>
 <body>
 
@@ -133,6 +294,1103 @@
 
     <div id="toast" role="status" aria-live="polite" hidden></div>
 
-    <script type="module" src="js/main.js"></script>
+    <script>
+(function () {
+"use strict";
+const __m = {};
+__m['config'] = (function () {
+// Costanti e valori predefiniti dell'app.
+const APP_VERSION = '6.0.0';
+
+const KEYS = {
+    types: 'raccolta_smart_types',
+    schedule: 'raccolta_smart_schedule_multi',
+    settings: 'raccolta_smart_settings'
+};
+
+const GCAL_SCOPE = 'https://www.googleapis.com/auth/calendar.events';
+const EVENT_MINUTES = 30;   // durata degli eventi di Calendar
+const QUEUE_DAYS = 21;      // quanti giorni di notifiche pianificare in anticipo
+
+const DEFAULT_TYPES = [
+    { id: 'indifferenziato', name: 'Indifferenziato', icon: '🗑️', desc: 'Rifiuti non riciclabili: pannolini, cocci di ceramica, polvere, mozziconi, giocattoli rotti. Esporre il sacco ben chiuso.' },
+    { id: 'organico', name: 'Organico', icon: '🍌', desc: 'Avanzi di cibo, scarti di frutta e verdura, fondi di caffè, tovaglioli sporchi. Usare sacchetti compostabili ed esporre il mastello.' },
+    { id: 'carta', name: 'Carta e Cartone', icon: '📦', desc: 'Giornali, riviste, scatole di cartone piegate e schiacciate, cartoni della pizza puliti. Senza sacchetti di plastica.' },
+    { id: 'plastica', name: 'Plastica e Metalli', icon: '🍼', desc: 'Bottiglie, flaconi, vaschette, lattine e barattoli di metallo. Svuotare e schiacciare i contenitori prima di esporli.' },
+    { id: 'vetro', name: 'Vetro', icon: '🍾', desc: 'Bottiglie, vasetti e barattoli di vetro, vuoti e senza tappo. Niente ceramica, cristallo o lampadine.' }
+];
+
+const EMOJI_CHOICES = ['🗑️', '🍌', '📦', '🍼', '🍾', '🌿', '🍂', '🥫', '🔋', '💡', '👕', '🪑', '💊', '🛢️', '📰', '♻️'];
+
+// id = valore di Date.getDay()
+const DAYS = [
+    { id: 1, name: 'Lunedì', rrule: 'MO' },
+    { id: 2, name: 'Martedì', rrule: 'TU' },
+    { id: 3, name: 'Mercoledì', rrule: 'WE' },
+    { id: 4, name: 'Giovedì', rrule: 'TH' },
+    { id: 5, name: 'Venerdì', rrule: 'FR' },
+    { id: 6, name: 'Sabato', rrule: 'SA' },
+    { id: 0, name: 'Domenica', rrule: 'SU' }
+];
+const dayById = id => DAYS.find(d => d.id === id);
+
+const REMINDER_OPTIONS = [
+    [0, "All'orario dell'evento"],
+    [10, '10 minuti prima'],
+    [30, '30 minuti prima'],
+    [60, '1 ora prima']
+];
+
+const DEFAULT_SETTINGS = {
+    holidays: true,
+    notifTime: '20:00',          // orario unico per notifiche ed eventi Calendar
+    notifEnabled: false,         // notifiche locali
+    gcalClientId: '',
+    gcalReminder: 0,
+    gcalSynced: false,
+    gcalDirty: false,
+    gcalLastSync: ''
+};
+
+return { APP_VERSION, KEYS, GCAL_SCOPE, EVENT_MINUTES, QUEUE_DAYS, DEFAULT_TYPES, EMOJI_CHOICES, DAYS, dayById, REMINDER_OPTIONS, DEFAULT_SETTINGS };
+})();
+__m['util'] = (function () {
+// Funzioni di utilità generiche: DOM, date, festività, toast e conferme.
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const clone = o => JSON.parse(JSON.stringify(o));
+
+function lsGet(key, fallback) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
+}
+function lsSet(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch (e) { return false; }
+}
+function lsRemove(key) { try { localStorage.removeItem(key); } catch (e) { /* ignore */ } }
+function haptic(ms = 20) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) { /* ignore */ } }
+
+/* ---------- Toast e conferma ---------- */
+let toastTimer = null;
+function toast(msg, action) {
+    const el = $('toast');
+    el.innerHTML = `<span>${esc(msg)}</span>`;
+    if (action) {
+        const b = document.createElement('button');
+        b.textContent = action.label;
+        b.onclick = () => { el.hidden = true; action.fn(); };
+        el.appendChild(b);
+    }
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.hidden = true; }, action ? 10000 : 3500);
+}
+
+function askConfirm(message, okLabel = 'Conferma') {
+    return new Promise(resolve => {
+        const dlg = $('confirmDialog');
+        $('confirmMsg').textContent = message;
+        $('confirmYes').textContent = okLabel;
+        const done = v => { dlg.close(); resolve(v); };
+        $('confirmYes').onclick = () => done(true);
+        $('confirmNo').onclick = () => done(false);
+        dlg.oncancel = () => resolve(false);
+        dlg.showModal();
+    });
+}
+
+/* ---------- Date ---------- */
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+function parseYMD(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+}
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const dayNum = d => Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+// Numero progressivo della settimana (lunedì-domenica): immune a ora legale e cambio d'anno
+function epochWeek(d) {
+    const dow = (d.getDay() + 6) % 7;
+    return Math.floor((dayNum(d) - dow) / 7);
+}
+function tzName() {
+    try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Rome'; } catch (e) { return 'Europe/Rome'; }
+}
+
+/* ---------- Festività italiane ---------- */
+function easterSunday(y) {
+    const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+    const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31), day = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(y, month - 1, day);
+}
+const FIXED_HOLIDAYS = {
+    '1-1': 'Capodanno', '6-1': 'Epifania', '25-4': 'Festa della Liberazione', '1-5': 'Festa del Lavoro',
+    '2-6': 'Festa della Repubblica', '15-8': 'Ferragosto', '1-11': 'Ognissanti',
+    '8-12': 'Immacolata Concezione', '25-12': 'Natale', '26-12': 'Santo Stefano'
+};
+function holidayName(date) {
+    const fixed = FIXED_HOLIDAYS[`${date.getDate()}-${date.getMonth() + 1}`];
+    if (fixed) return fixed;
+    const easter = easterSunday(date.getFullYear());
+    if (ymd(date) === ymd(easter)) return 'Pasqua';
+    if (ymd(date) === ymd(addDays(easter, 1))) return "Lunedì dell'Angelo (Pasquetta)";
+    return '';
+}
+
+return { $, esc, pad, clone, lsGet, lsSet, lsRemove, haptic, toast, askConfirm, ymd, parseYMD, addDays, startOfDay, epochWeek, tzName, holidayName };
+})();
+__m['state'] = (function () {
+// Stato dell'app (tipi, orari, impostazioni) e persistenza su localStorage.
+const { KEYS, DEFAULT_TYPES, DEFAULT_SETTINGS } = __m['config'];
+const { lsGet, lsSet, clone, parseYMD, ymd } = __m['util'];
+
+function loadTypes() {
+    const stored = lsGet(KEYS.types, null);
+    if (Array.isArray(stored) && stored.every(t => t && typeof t.id === 'string' && typeof t.name === 'string')) {
+        return stored.map(t => ({ id: t.id, name: t.name, icon: t.icon || '♻️', desc: t.desc || '' }));
+    }
+    return clone(DEFAULT_TYPES);
+}
+
+function loadSchedule() {
+    const stored = lsGet(KEYS.schedule, null);
+    const fallback = {
+        1: [{ type: 'organico', freq: 'every', refDate: '' }],
+        2: [{ type: 'plastica', freq: 'every', refDate: '' }],
+        3: [{ type: 'organico', freq: 'every', refDate: '' }, { type: 'vetro', freq: 'every', refDate: '' }],
+        4: [{ type: 'carta', freq: 'every', refDate: '' }],
+        5: [{ type: 'organico', freq: 'every', refDate: '' }],
+        6: [{ type: 'indifferenziato', freq: 'every', refDate: '' }],
+        0: []
+    };
+    const src = stored && typeof stored === 'object' ? stored : fallback;
+    const out = {};
+    for (let d = 0; d < 7; d++) {
+        const list = Array.isArray(src[d]) ? src[d] : [];
+        out[d] = list.filter(i => i && typeof i.type === 'string').map(i => {
+            const freq = ['every', 'odd', 'even'].includes(i.freq) ? i.freq : 'every';
+            let refDate = parseYMD(i.refDate) ? i.refDate : '';
+            if (freq !== 'every' && !refDate) refDate = ymd(new Date()); // le cadenze alterne richiedono una data valida
+            return { type: i.type, freq, refDate };
+        });
+    }
+    return out;
+}
+
+const state = {
+    types: loadTypes(),
+    schedule: loadSchedule(),
+    settings: Object.assign({}, DEFAULT_SETTINGS, lsGet(KEYS.settings, {}))
+};
+
+const getType = id => state.types.find(t => t.id === id);
+const typeInfo = id => getType(id) || { id, name: 'Tipo eliminato', icon: '❔', desc: '' };
+
+const saveTypes = () => lsSet(KEYS.types, state.types);
+const saveSchedule = () => lsSet(KEYS.schedule, state.schedule);
+const saveSettings = () => lsSet(KEYS.settings, state.settings);
+
+// Notifica ai listener che orari, tipi o orario promemoria sono cambiati
+const listeners = new Set();
+const onDataChange = fn => listeners.add(fn);
+const touch = () => listeners.forEach(fn => { try { fn(); } catch (e) { console.error(e); } });
+
+return { state, getType, typeInfo, saveTypes, saveSchedule, saveSettings, onDataChange, touch };
+})();
+__m['schedule'] = (function () {
+// Logica pura del calendario di raccolta: quali rifiuti si ritirano in un dato giorno.
+const { state, getType } = __m['state'];
+const { epochWeek, parseYMD } = __m['util'];
+
+// Fase di una cadenza alterna: il ritiro cade nelle settimane con epochWeek % 2 === fase.
+// -1 = ogni settimana.
+function itemPhase(item) {
+    if (item.freq !== 'odd' && item.freq !== 'even') return -1;
+    const ref = parseYMD(item.refDate);
+    if (!ref) return -1;
+    return (((epochWeek(ref) + (item.freq === 'even' ? 1 : 0)) % 2) + 2) % 2;
+}
+
+const phaseMatches = (phase, date) => phase < 0 || (((epochWeek(date) % 2) + 2) % 2) === phase;
+
+// Ritiri previsti nel giorno `date` (solo tipi ancora esistenti se onlyKnown)
+function getActiveItemsForDate(date, onlyKnown = false) {
+    const items = state.schedule[date.getDay()] || [];
+    return items.filter(item => phaseMatches(itemPhase(item), date) && (!onlyKnown || getType(item.type)));
+}
+
+return { itemPhase, phaseMatches, getActiveItemsForDate };
+})();
+__m['calendar'] = (function () {
+// Eventi di calendario: raggruppamento, file .ics, link Google Calendar e sincronizzazione via API.
+const { DAYS, dayById, EVENT_MINUTES, GCAL_SCOPE } = __m['config'];
+const { state, getType, saveSettings } = __m['state'];
+const { addDays, pad, startOfDay, tzName } = __m['util'];
+const { itemPhase, phaseMatches } = __m['schedule'];
+
+const { settings } = state;
+
+function eventTime() {
+    const [h, m] = (settings.notifTime || '20:00').split(':').map(Number);
+    return { h: isNaN(h) ? 20 : h, m: isNaN(m) ? 0 : m };
+}
+
+/* ---------- Eventi ---------- */
+// Un evento ricorrente per ogni gruppo giorno+cadenza, la sera prima del ritiro all'orario scelto.
+function buildEventGroups() {
+    const groups = new Map();
+    DAYS.forEach(d => {
+        (state.schedule[d.id] || []).forEach(item => {
+            if (!getType(item.type)) return;
+            const phase = itemPhase(item);
+            const key = `${d.id}-${phase}`;
+            if (!groups.has(key)) groups.set(key, { key, dow: d.id, phase, items: [] });
+            groups.get(key).items.push(item);
+        });
+    });
+
+    const { h, m } = eventTime();
+    const now = new Date();
+    const out = [];
+    groups.forEach(g => {
+        let first = null;
+        for (let i = 0; i <= 30 && !first; i++) {
+            const collect = addDays(startOfDay(now), i);
+            if (collect.getDay() !== g.dow || !phaseMatches(g.phase, collect)) continue;
+            const eve = addDays(collect, -1);
+            const start = new Date(eve.getFullYear(), eve.getMonth(), eve.getDate(), h, m);
+            if (start.getTime() > now.getTime()) first = start;
+        }
+        if (!first) return;
+        const list = g.items.map(i => getType(i.type));
+        const body = list.map(t => `${t.icon} ${t.name}${t.desc ? '\n' + t.desc : ''}`).join('\n\n');
+        out.push({
+            key: g.key,
+            start: first,
+            end: new Date(first.getTime() + EVENT_MINUTES * 60000),
+            summary: `♻️ Esporre: ${list.map(t => t.name).join(', ')}`,
+            description: `Da esporre stasera per il ritiro di ${dayById(g.dow).name.toLowerCase()}:\n\n${body}\n\n— Raccolta Smart`,
+            rrule: `FREQ=WEEKLY;INTERVAL=${g.phase < 0 ? 1 : 2};BYDAY=${dayById(first.getDay()).rrule}`
+        });
+    });
+    return out;
+}
+
+const fmtLocal = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+const fmtISOLocal = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+
+/* ---------- File .ics ---------- */
+const icsEscape = s => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+
+function icsFold(line) {
+    const enc = new TextEncoder();
+    let out = '', cur = '', bytes = 0;
+    for (const ch of line) {
+        const b = enc.encode(ch).length;
+        if (bytes + b > 73) { out += cur + '\r\n '; cur = ''; bytes = 1; }
+        cur += ch; bytes += b;
+    }
+    return out + cur;
+}
+
+function buildICS() {
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Raccolta Smart//IT', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:Raccolta Smart'];
+    buildEventGroups().forEach(ev => {
+        lines.push('BEGIN:VEVENT',
+            `UID:rs-${ev.key}@raccolta-smart`,
+            `DTSTAMP:${stamp}`,
+            `DTSTART:${fmtLocal(ev.start)}`,
+            `DTEND:${fmtLocal(ev.end)}`,
+            `RRULE:${ev.rrule}`,
+            `SUMMARY:${icsEscape(ev.summary)}`,
+            `DESCRIPTION:${icsEscape(ev.description)}`,
+            'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsEscape(ev.summary)}`, `TRIGGER:-PT${Number(settings.gcalReminder) || 0}M`, 'END:VALARM',
+            'END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    return lines.map(icsFold).join('\r\n') + '\r\n';
+}
+
+function downloadICS() {
+    const blob = new Blob([buildICS()], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'raccolta-smart.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* ---------- Link "Aggiungi a Google Calendar" (senza configurazione) ---------- */
+function calendarTemplateUrl(ev) {
+    const p = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: ev.summary,
+        details: ev.description,
+        dates: `${fmtLocal(ev.start)}/${fmtLocal(ev.end)}`,
+        ctz: tzName(),
+        recur: `RRULE:${ev.rrule}`
+    });
+    return `https://calendar.google.com/calendar/render?${p.toString()}`;
+}
+
+/* ---------- Google Calendar API (OAuth con ID client personale) ---------- */
+let gisPromise = null, accessToken = null, tokenExpiry = 0;
+
+function loadGIS() {
+    if (window.google && google.accounts && google.accounts.oauth2) return Promise.resolve();
+    if (gisPromise) return gisPromise;
+    gisPromise = new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://accounts.google.com/gsi/client';
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = () => { gisPromise = null; reject(new Error('Impossibile caricare Google Identity Services (sei online?)')); };
+        document.head.appendChild(s);
+    });
+    return gisPromise;
+}
+
+async function getGoogleToken() {
+    if (accessToken && Date.now() < tokenExpiry - 60000) return accessToken;
+    const clientId = (settings.gcalClientId || '').trim();
+    if (!clientId) throw new Error("Inserisci prima l'ID client OAuth di Google.");
+    await loadGIS();
+    return new Promise((resolve, reject) => {
+        const client = google.accounts.oauth2.initTokenClient({
+            client_id: clientId,
+            scope: GCAL_SCOPE,
+            callback: r => {
+                if (r.error) return reject(new Error(r.error_description || r.error));
+                accessToken = r.access_token;
+                tokenExpiry = Date.now() + (Number(r.expires_in) || 3600) * 1000;
+                resolve(accessToken);
+            },
+            error_callback: e => reject(new Error(e && e.type === 'popup_closed' ? 'Autorizzazione annullata.' : (e && e.message) || 'Autorizzazione non riuscita.'))
+        });
+        client.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+    });
+}
+
+function resetGoogleSession() { accessToken = null; tokenExpiry = 0; }
+
+async function gcalFetch(path, opts = {}) {
+    const token = await getGoogleToken();
+    const res = await fetch(`https://www.googleapis.com/calendar/v3${path}`, {
+        ...opts,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers || {}) }
+    });
+    if (res.status === 401) { resetGoogleSession(); throw new Error('Sessione Google scaduta: riprova.'); }
+    if (res.status === 204) return null;
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        const m = data && data.error && data.error.message;
+        throw new Error(m ? `Google Calendar: ${m}` : `Errore Google Calendar (${res.status})`);
+    }
+    return data;
+}
+
+async function listOwnEventIds() {
+    const ids = [];
+    let pageToken = '';
+    do {
+        const q = new URLSearchParams({ privateExtendedProperty: 'raccoltaSmart=1', maxResults: '250', showDeleted: 'false' });
+        if (pageToken) q.set('pageToken', pageToken);
+        const data = await gcalFetch(`/calendars/primary/events?${q}`);
+        (data.items || []).forEach(e => ids.push(e.id));
+        pageToken = data.nextPageToken || '';
+    } while (pageToken);
+    return ids;
+}
+
+const deleteEvent = id => gcalFetch(`/calendars/primary/events/${encodeURIComponent(id)}`, { method: 'DELETE' });
+
+// Sostituisce gli eventi creati dall'app con quelli aggiornati. Restituisce quanti ne ha creati.
+async function syncGoogleCalendar() {
+    const evs = buildEventGroups();
+    await getGoogleToken();
+    for (const id of await listOwnEventIds()) await deleteEvent(id);
+    const tz = tzName();
+    for (const ev of evs) {
+        await gcalFetch('/calendars/primary/events', {
+            method: 'POST',
+            body: JSON.stringify({
+                summary: ev.summary,
+                description: ev.description,
+                start: { dateTime: fmtISOLocal(ev.start), timeZone: tz },
+                end: { dateTime: fmtISOLocal(ev.end), timeZone: tz },
+                recurrence: [`RRULE:${ev.rrule}`],
+                reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: Number(settings.gcalReminder) || 0 }] },
+                extendedProperties: { private: { raccoltaSmart: '1' } }
+            })
+        });
+    }
+    settings.gcalSynced = evs.length > 0;
+    settings.gcalDirty = false;
+    settings.gcalLastSync = new Date().toISOString();
+    saveSettings();
+    return evs.length;
+}
+
+async function removeGoogleEvents() {
+    const ids = await listOwnEventIds();
+    for (const id of ids) await deleteEvent(id);
+    settings.gcalSynced = false; settings.gcalDirty = false; settings.gcalLastSync = '';
+    saveSettings();
+    return ids.length;
+}
+
+// Segna Calendar come "da risincronizzare" dopo una modifica
+function markCalendarDirty() {
+    if (settings.gcalSynced && !settings.gcalDirty) { settings.gcalDirty = true; saveSettings(); }
+}
+
+return { eventTime, buildEventGroups, buildICS, downloadICS, calendarTemplateUrl, resetGoogleSession, syncGoogleCalendar, removeGoogleEvents, markCalendarDirty };
+})();
+__m['reminders'] = (function () {
+// Promemoria: coda di notifiche e notifiche locali.
+const { QUEUE_DAYS } = __m['config'];
+const { state, getType, saveSettings } = __m['state'];
+const { addDays, holidayName, startOfDay, ymd } = __m['util'];
+const { getActiveItemsForDate } = __m['schedule'];
+const { eventTime } = __m['calendar'];
+
+const { settings } = state;
+
+const notifSupported = () => 'Notification' in window && 'serviceWorker' in navigator;
+const notifGranted = () => notifSupported() && Notification.permission === 'granted';
+const notifActive = () => settings.notifEnabled && notifGranted();
+
+/* ---------- Service worker e cache di configurazione ---------- */
+function getRegistration() {
+    if (!('serviceWorker' in navigator)) return Promise.resolve(null);
+    return Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise(r => setTimeout(() => r(null), 4000))
+    ]).catch(() => null);
+}
+
+// La coda è condivisa con il service worker tramite la Cache API (il SW non vede localStorage)
+async function writeConfig(name, data, reg) {
+    if (!('caches' in window) || !reg) return;
+    const cache = await caches.open('rs-config');
+    await cache.put(new URL(name, reg.scope).href, new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } }));
+}
+
+/* ---------- Coda notifiche ---------- */
+// Una notifica per ogni sera, dal giorno corrente per QUEUE_DAYS giorni, solo se il giorno dopo c'è un ritiro.
+function buildQueue() {
+    const out = [];
+    const { h, m } = eventTime();
+    const base = startOfDay(new Date());
+    const now = Date.now();
+    for (let i = 0; i < QUEUE_DAYS; i++) {
+        const eve = new Date(base.getFullYear(), base.getMonth(), base.getDate() + i, h, m);
+        const collect = addDays(base, i + 1);
+        const items = getActiveItemsForDate(collect, true);
+        if (!items.length || eve.getTime() < now - 5 * 3600 * 1000) continue;
+        const hName = settings.holidays ? holidayName(collect) : '';
+        const body = (hName ? `⚠️ Domani è festivo (${hName}): il ritiro potrebbe essere sospeso.\n` : '') +
+            items.map(it => { const t = getType(it.type); return `${t.icon} ${t.name}${t.desc ? ': ' + t.desc : ''}`; }).join('\n');
+        out.push({
+            id: ymd(eve),
+            fireAt: eve.getTime(),
+            title: `♻️ Da esporre per domani: ${items.map(it => getType(it.type).name).join(', ')}`,
+            body
+        });
+    }
+    return out;
+}
+
+// Riscrive la coda per il service worker.
+async function rebuildReminders() {
+    try {
+        const reg = await getRegistration();
+        if (!reg) return;
+        const active = notifActive();
+        const queue = active ? buildQueue() : [];
+        await writeConfig('__queue.json', queue, reg);
+        if (active && reg.active) reg.active.postMessage({ type: 'CHECK' });
+    } catch (e) { /* best effort */ }
+}
+
+async function checkDueNow() {
+    if (!notifActive()) return;
+    const reg = await getRegistration();
+    if (reg && reg.active) reg.active.postMessage({ type: 'CHECK' });
+}
+
+/* ---------- Notifiche locali ---------- */
+async function setPeriodicSync(on) {
+    try {
+        const reg = await getRegistration();
+        if (!reg || !reg.periodicSync) return;
+        if (on) await reg.periodicSync.register('raccolta-check', { minInterval: 60 * 60 * 1000 });
+        else await reg.periodicSync.unregister('raccolta-check');
+    } catch (e) { /* non supportato o non concesso */ }
+}
+
+async function ensurePermission() {
+    if (!notifSupported()) throw new Error('Questo browser non supporta le notifiche.');
+    let perm = Notification.permission;
+    if (perm === 'default') perm = await Notification.requestPermission();
+    if (perm !== 'granted') throw new Error('Permesso notifiche non concesso.');
+}
+
+async function enableNotifications() {
+    await ensurePermission();
+    settings.notifEnabled = true;
+    saveSettings();
+    await setPeriodicSync(true);
+    await rebuildReminders();
+}
+
+async function disableNotifications() {
+    settings.notifEnabled = false;
+    saveSettings();
+    await setPeriodicSync(false);
+    await rebuildReminders();
+}
+
+async function sendTestNotification() {
+    if (!notifGranted()) throw new Error('Attiva prima le notifiche.');
+    const reg = await getRegistration();
+    if (!reg) throw new Error('Service worker non disponibile.');
+    const items = getActiveItemsForDate(addDays(new Date(), 1), true);
+    const body = items.length ? items.map(i => { const t = getType(i.type); return `${t.icon} ${t.name}`; }).join('\n') : 'Notifica di prova: tutto funziona!';
+    await reg.showNotification('♻️ Raccolta Smart', {
+        body,
+        icon: new URL('icon-192.png', reg.scope).href,
+        badge: new URL('icon-192.png', reg.scope).href,
+        tag: 'rs-test',
+        data: { url: './index.html' }
+    });
+}
+
+// Cancella ogni traccia locale dei promemoria (usato dal ripristino)
+async function wipeReminders() {
+    await setPeriodicSync(false);
+    const reg = await getRegistration();
+    if (reg) { await writeConfig('__queue.json', [], reg); await writeConfig('__shown.json', [], reg); }
+}
+
+return { notifSupported, notifGranted, getRegistration, buildQueue, rebuildReminders, checkDueNow, enableNotifications, disableNotifications, sendTestNotification, wipeReminders };
+})();
+__m['views/dashboard'] = (function () {
+// Scheda Dashboard: cosa esporre stasera e prossimi ritiri.
+const { dayById } = __m['config'];
+const { state, typeInfo, saveSettings, touch } = __m['state'];
+const { $, addDays, esc, holidayName, pad, ymd } = __m['util'];
+const { getActiveItemsForDate } = __m['schedule'];
+const { notifGranted } = __m['reminders'];
+
+const { settings } = state;
+let lastRenderDay = '';
+const renderedDay = () => lastRenderDay;
+
+const trashRows = items => items.map(item => {
+    const t = typeInfo(item.type);
+    return `<div class="trash"><span class="ico" aria-hidden="true">${esc(t.icon)}</span><div><div class="nm">${esc(t.name)}</div>${t.desc ? `<div class="ds">${esc(t.desc)}</div>` : ''}</div></div>`;
+}).join('');
+
+function renderDashboard() {
+    const now = new Date();
+    lastRenderDay = ymd(now);
+    const tomorrow = addDays(now, 1);
+    const items = getActiveItemsForDate(tomorrow);
+    const hName = settings.holidays ? holidayName(tomorrow) : '';
+
+    if (!items.length) {
+        $('tonightTrash').innerHTML = '<div class="banner"><span class="ico" aria-hidden="true">✨</span><span>Nessun rifiuto da esporre stasera.</span></div>';
+    } else if (hName) {
+        $('tonightTrash').innerHTML = `<div class="banner"><span class="ico" aria-hidden="true">🚨</span><span>Domani è festivo (${esc(hName)}): il ritiro potrebbe essere sospeso. Controlla il calendario del tuo comune.</span></div><div style="opacity:.75">${trashRows(items)}</div>`;
+    } else {
+        $('tonightTrash').innerHTML = trashRows(items);
+    }
+
+    $('tonightMeta').textContent = settings.notifEnabled && notifGranted()
+        ? `🔔 Promemoria ogni sera alle ${settings.notifTime}`
+        : '';
+
+    let up = '';
+    for (let i = 1; i <= 7; i++) {
+        const d = addDays(now, i);
+        const its = getActiveItemsForDate(d);
+        const label = i === 1 ? 'Domani' : dayById(d.getDay()).name.slice(0, 3);
+        const h = settings.holidays ? holidayName(d) : '';
+        const what = its.length
+            ? its.map(it => { const t = typeInfo(it.type); return `<span aria-hidden="true">${esc(t.icon)}</span> ${esc(t.name)}`; }).join('<br>')
+            : '<span class="muted">—</span>';
+        up += `<div class="upc"><span class="when">${esc(label)} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}${h && its.length ? ` <span title="${esc(h)}">🎉</span>` : ''}</span><span class="what">${what}</span></div>`;
+    }
+    $('upcoming').innerHTML = up;
+    $('holidayToggle').checked = !!settings.holidays;
+}
+
+const changes = {
+    setHolidays(el) {
+        settings.holidays = el.checked;
+        saveSettings();
+        touch();
+        renderDashboard();
+    }
+};
+
+return { renderedDay, renderDashboard, changes };
+})();
+__m['views/schedule-view'] = (function () {
+// Scheda Orari: giorni della settimana e rifiuti ritirati.
+const { DAYS } = __m['config'];
+const { state, getType, saveSchedule, touch } = __m['state'];
+const { $, esc, haptic, parseYMD, toast, ymd } = __m['util'];
+
+function renderSchedule() {
+    const container = $('scheduleConfigList');
+    const { types, schedule } = state;
+    const warn = types.length ? '' : '<p class="muted warn">Non ci sono tipi di rifiuto: creane uno dalla scheda Guida.</p>';
+
+    container.innerHTML = warn + DAYS.map(d => {
+        const items = schedule[d.id] || [];
+        const itemsHtml = items.map((item, index) => {
+            const key = `${d.id}-${index}`;
+            const data = `data-day="${d.id}" data-index="${index}"`;
+            let opts = types.map(t => `<option value="${esc(t.id)}" ${item.type === t.id ? 'selected' : ''}>${esc(t.icon)} ${esc(t.name)}</option>`).join('');
+            if (!getType(item.type)) opts = `<option value="${esc(item.type)}" selected>❔ Tipo eliminato</option>` + opts;
+            const alt = item.freq !== 'every';
+            return `
+            <div class="item">
+                <div class="row between">
+                    <label class="lbl grow" for="t-${key}" style="margin:0">Rifiuto #${index + 1}</label>
+                    <button type="button" class="btn btn-danger btn-sm" data-action="removeItem" ${data} aria-label="Rimuovi rifiuto ${index + 1} di ${esc(d.name)}">✕ Rimuovi</button>
+                </div>
+                <select id="t-${key}" data-change="updateItem" data-field="type" ${data}>${opts}</select>
+                <div class="grid2">
+                    <div>
+                        <label class="lbl" for="f-${key}">Cadenza</label>
+                        <select id="f-${key}" data-change="updateItem" data-field="freq" ${data}>
+                            <option value="every" ${item.freq === 'every' ? 'selected' : ''}>Ogni settimana</option>
+                            <option value="odd" ${item.freq === 'odd' ? 'selected' : ''}>Settimane alterne (1ª, 3ª…)</option>
+                            <option value="even" ${item.freq === 'even' ? 'selected' : ''}>Settimane alterne (2ª, 4ª…)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="lbl" for="r-${key}">Data di riferimento</label>
+                        <input type="date" id="r-${key}" value="${esc(item.refDate)}" ${alt ? '' : 'disabled'} data-change="updateItem" data-field="refDate" ${data}>
+                    </div>
+                </div>
+                ${alt ? '<p class="muted">Scegli una data qualsiasi della settimana che conta come «1ª»: da lì le settimane si alternano.</p>' : ''}
+            </div>`;
+        }).join('');
+        return `
+        <div class="day">
+            <div class="row between">
+                <span class="day-name">${esc(d.name)}</span>
+                <button type="button" class="btn btn-primary btn-sm" data-action="addItem" data-day="${d.id}" ${types.length ? '' : 'disabled'} aria-label="Aggiungi rifiuto a ${esc(d.name)}">+ Aggiungi rifiuto</button>
+            </div>
+            <div class="stack">${itemsHtml || '<p class="faint">Nessun ritiro programmato per questo giorno.</p>'}</div>
+        </div>`;
+    }).join('');
+}
+
+function commit() { saveSchedule(); touch(); }
+
+const actions = {
+    addItem(el) {
+        if (!state.types.length) return;
+        haptic();
+        const day = Number(el.dataset.day);
+        (state.schedule[day] = state.schedule[day] || []).push({ type: state.types[0].id, freq: 'every', refDate: '' });
+        commit(); renderSchedule();
+    },
+    removeItem(el) {
+        haptic();
+        const list = state.schedule[Number(el.dataset.day)];
+        if (list) list.splice(Number(el.dataset.index), 1);
+        commit(); renderSchedule();
+    }
+};
+
+const changes = {
+    updateItem(el) {
+        const item = (state.schedule[Number(el.dataset.day)] || [])[Number(el.dataset.index)];
+        if (!item) return;
+        const field = el.dataset.field;
+        item[field] = el.value;
+        // Le cadenze alterne hanno sempre bisogno di una data di riferimento valida
+        if (item.freq !== 'every' && !parseYMD(item.refDate)) item.refDate = ymd(new Date());
+        commit();
+        if (field !== 'type') renderSchedule();
+        toast('Salvato');
+    }
+};
+
+return { renderSchedule, actions, changes };
+})();
+__m['views/guide-view'] = (function () {
+// Scheda Guida: elenco e gestione dei tipi di rifiuto.
+const { DEFAULT_TYPES, EMOJI_CHOICES } = __m['config'];
+const { state, getType, saveTypes, saveSchedule, touch } = __m['state'];
+const { $, askConfirm, clone, esc, toast } = __m['util'];
+
+let editingId = null;
+
+function renderGuide() {
+    const list = $('guideList');
+    if (!state.types.length) {
+        list.innerHTML = '<p class="faint">Nessun tipo di rifiuto. Aggiungine uno o ripristina quelli predefiniti.</p>';
+        return;
+    }
+    list.innerHTML = state.types.map(t => `
+        <div class="type">
+            <span class="ico" aria-hidden="true">${esc(t.icon)}</span>
+            <div class="grow">
+                <div class="strong">${esc(t.name)}</div>
+                <div class="muted">${esc(t.desc) || '<i>Nessuna descrizione.</i>'}</div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-ghost icon-btn" data-action="editType" data-id="${esc(t.id)}" aria-label="Modifica ${esc(t.name)}">✏️</button>
+                <button class="btn btn-danger icon-btn" data-action="deleteType" data-id="${esc(t.id)}" aria-label="Elimina ${esc(t.name)}">🗑️</button>
+            </div>
+        </div>`).join('');
+}
+
+function openEditor(id) {
+    editingId = id || null;
+    const t = id ? getType(id) : null;
+    $('typeDialogTitle').textContent = t ? 'Modifica tipo di rifiuto' : 'Nuovo tipo di rifiuto';
+    $('typeName').value = t ? t.name : '';
+    $('typeIcon').value = t ? t.icon : '♻️';
+    $('typeDesc').value = t ? t.desc : '';
+    $('typeErr').textContent = '';
+    $('emojiPick').innerHTML = EMOJI_CHOICES.map(e => `<button type="button" data-action="pickEmoji" data-emoji="${e}" aria-label="Usa icona ${e}">${e}</button>`).join('');
+    $('typeDialog').showModal();
+    $('typeName').focus();
+}
+
+// Chiamato dal submit del form nel dialog
+function saveTypeFromForm(ev) {
+    ev.preventDefault();
+    const name = $('typeName').value.trim();
+    const icon = $('typeIcon').value.trim() || '♻️';
+    const desc = $('typeDesc').value.trim();
+    const err = $('typeErr');
+    if (!name) { err.textContent = 'Inserisci un nome.'; return; }
+    if (state.types.some(t => t.id !== editingId && t.name.toLowerCase() === name.toLowerCase())) {
+        err.textContent = 'Esiste già un tipo con questo nome.'; return;
+    }
+    if (editingId) {
+        const t = getType(editingId);
+        if (t) Object.assign(t, { name, icon, desc });
+    } else {
+        const base = name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'tipo';
+        let id = base, n = 2;
+        while (getType(id)) id = `${base}-${n++}`;
+        state.types.push({ id, name, icon, desc });
+    }
+    saveTypes(); touch();
+    $('typeDialog').close();
+    renderGuide();
+    toast('Tipo salvato');
+}
+
+const actions = {
+    newType() { openEditor(); },
+    editType(el) { openEditor(el.dataset.id); },
+    pickEmoji(el) { $('typeIcon').value = el.dataset.emoji; },
+
+    async deleteType(el) {
+        const id = el.dataset.id;
+        const t = getType(id);
+        if (!t) return;
+        let uses = 0;
+        Object.values(state.schedule).forEach(list => list.forEach(i => { if (i.type === id) uses++; }));
+        const msg = uses
+            ? `Eliminare «${t.name}»? Verrà rimosso anche da ${uses} ${uses === 1 ? 'ritiro programmato' : 'ritiri programmati'}.`
+            : `Eliminare «${t.name}»?`;
+        if (!(await askConfirm(msg, 'Elimina'))) return;
+        state.types = state.types.filter(x => x.id !== id);
+        Object.keys(state.schedule).forEach(d => { state.schedule[d] = state.schedule[d].filter(i => i.type !== id); });
+        saveTypes(); saveSchedule(); touch();
+        renderGuide();
+        toast('Tipo eliminato');
+    },
+
+    async restoreTypes() {
+        if (!(await askConfirm('Ripristinare i tipi predefiniti? Quelli eliminati tornano e quelli modificati riprendono nome, icona e descrizione originali. I tuoi tipi personalizzati restano.', 'Ripristina'))) return;
+        DEFAULT_TYPES.forEach(d => {
+            const idx = state.types.findIndex(t => t.id === d.id);
+            if (idx >= 0) state.types[idx] = clone(d); else state.types.push(clone(d));
+        });
+        saveTypes(); touch(); renderGuide();
+        toast('Tipi predefiniti ripristinati');
+    }
+};
+
+return { renderGuide, saveTypeFromForm, actions };
+})();
+__m['views/settings-view'] = (function () {
+// Scheda Impostazioni: promemoria (notifiche), Google Calendar, dati.
+const { APP_VERSION, KEYS, REMINDER_OPTIONS } = __m['config'];
+const { state, saveSettings, touch } = __m['state'];
+const { $, askConfirm, esc, lsRemove, pad, toast } = __m['util'];
+const {
+    buildICS, buildEventGroups, calendarTemplateUrl, downloadICS, markCalendarDirty,
+    removeGoogleEvents, resetGoogleSession, syncGoogleCalendar
+} = __m['calendar'];
+const {
+    disableNotifications, enableNotifications, notifGranted, notifSupported, sendTestNotification, wipeReminders
+} = __m['reminders'];
+const { dayById } = __m['config'];
+
+const { settings } = state;
+
+function notifStatus() {
+    if (!notifSupported()) return 'Questo browser non supporta le notifiche.';
+    if (Notification.permission === 'denied') return 'Notifiche bloccate: abilitale dalle impostazioni del browser o del sistema.';
+    if (settings.notifEnabled && notifGranted()) return `Attive: avviso alle ${settings.notifTime} la sera prima di ogni ritiro.`;
+    return 'Disattivate.';
+}
+
+function renderSettings() {
+    const lastSync = settings.gcalLastSync ? new Date(settings.gcalLastSync).toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' }) : '';
+    const origin = location.protocol.startsWith('http') ? location.origin : "(apri l'app da un indirizzo https://)";
+    const notifOn = settings.notifEnabled && notifGranted();
+    const validClientId = /\.apps\.googleusercontent\.com$/.test(settings.gcalClientId);
+
+    $('settingsBody').innerHTML = `
+        <div class="card">
+            <h3 class="card-title"><span aria-hidden="true">🔔</span> Promemoria</h3>
+            <div>
+                <label class="lbl" for="notifTime">Orario della sera (notifiche ed eventi Calendar)</label>
+                <input type="time" id="notifTime" value="${esc(settings.notifTime)}" data-change="setNotifTime">
+            </div>
+            <div class="row between">
+                <label for="notifToggle" class="grow strong" style="font-size:.9rem">Avvisami la sera prima</label>
+                <span class="switch"><input type="checkbox" id="notifToggle" ${notifOn ? 'checked' : ''} data-change="toggleNotif"><span class="track"></span></span>
+            </div>
+            <p class="muted">${esc(notifStatus())}</p>
+            <button class="btn btn-ghost btn-block" data-action="sendTest">Invia notifica di prova</button>
+
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span aria-hidden="true">📆</span> Google Calendar</h3>
+            <p class="muted">Crea eventi ricorrenti la sera prima di ogni ritiro, con la descrizione dei rifiuti da mettere fuori e il promemoria di Calendar.</p>
+            ${settings.gcalDirty ? '<p class="warn muted strong">⚠️ Hai modificato orari, tipi o promemoria dopo l\'ultima sincronizzazione: risincronizza per aggiornare Calendar.</p>' : ''}
+            <div>
+                <label class="lbl" for="gcalReminder">Promemoria di Calendar</label>
+                <select id="gcalReminder" data-change="setGcalReminder">
+                    ${REMINDER_OPTIONS.map(([v, l]) => `<option value="${v}" ${Number(settings.gcalReminder) === v ? 'selected' : ''}>${l}</option>`).join('')}
+                </select>
+            </div>
+            <button class="btn btn-primary btn-block" data-action="openLinks">Aggiungi a Google Calendar</button>
+            <button class="btn btn-ghost btn-block" data-action="downloadICS">Scarica file .ics (Calendar, Apple, Outlook)</button>
+
+            <details open>
+                <summary>Sincronizzazione automatica con il tuo account Google</summary>
+                <div class="stack">
+                    <p class="muted">Collega il tuo account Google: gli eventi vengono creati e aggiornati direttamente. Serve un ID client OAuth personale (gratuito):</p>
+                    <ol class="steps">
+                        <li>Apri <code>console.cloud.google.com</code>, crea un progetto e abilita <b>Google Calendar API</b>.</li>
+                        <li>In «Schermata consenso OAuth» scegli «Esterno» e aggiungi il tuo account Google tra gli utenti di test.</li>
+                        <li>In «Credenziali» crea un <b>ID client OAuth → Applicazione web</b>.</li>
+                        <li>Tra le «Origini JavaScript autorizzate» inserisci: <code>${esc(origin)}</code></li>
+                        <li>Incolla qui sotto l'ID client (termina con <code>.apps.googleusercontent.com</code>).</li>
+                    </ol>
+                    <div>
+                        <label class="lbl" for="gcalClientId">ID client OAuth</label>
+                        <input type="text" id="gcalClientId" value="${esc(settings.gcalClientId)}" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off" autocapitalize="off" spellcheck="false" data-change="setClientId">
+                    </div>
+                    <button class="btn btn-primary btn-block" data-action="gcalSync" ${validClientId ? '' : 'disabled'}>Connetti e sincronizza</button>
+                    ${settings.gcalSynced ? `<p class="muted">Ultima sincronizzazione: ${esc(lastSync)}</p><button class="btn btn-danger btn-block" data-action="gcalRemove">Rimuovi eventi da Google Calendar</button>` : ''}
+                </div>
+            </details>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span aria-hidden="true">🧰</span> Dati</h3>
+            <p class="muted">Reimposta orari, tipi di rifiuto e impostazioni ai valori iniziali.</p>
+            <button class="btn btn-danger btn-block" data-action="resetAll">Ripristina impostazioni predefinite</button>
+        </div>
+
+        <p class="muted" style="text-align:center">Raccolta Smart v${esc(APP_VERSION)}</p>`;
+}
+
+// Esegue un'operazione asincrona mostrando eventuali errori, poi ridisegna la scheda
+async function run(fn, okMsg) {
+    try { await fn(); if (okMsg) toast(okMsg); } catch (e) { toast(e.message || 'Operazione non riuscita'); }
+    renderSettings();
+}
+
+const actions = {
+    sendTest: () => run(sendTestNotification),
+
+    openLinks() {
+        const evs = buildEventGroups();
+        if (!evs.length) { toast('Nessun ritiro da aggiungere'); return; }
+        $('linksList').innerHTML = evs.map(ev => `
+            <a class="btn btn-primary" href="${esc(calendarTemplateUrl(ev))}" target="_blank" rel="noopener">${esc(ev.summary)}<br><span style="font-weight:500;font-size:.75rem">dalle ${pad(ev.start.getHours())}:${pad(ev.start.getMinutes())} · ${esc(dayById(ev.start.getDay()).name)} sera</span></a>`).join('');
+        $('linksDialog').showModal();
+    },
+
+    downloadICS() {
+        if (!buildEventGroups().length) { toast('Nessun ritiro da esportare'); return; }
+        downloadICS();
+        toast('File .ics scaricato: aprilo per importarlo in Google Calendar');
+    },
+
+    async gcalSync() {
+        await run(async () => {
+            const n = await syncGoogleCalendar();
+            toast(n ? `Sincronizzati ${n} eventi ricorrenti su Google Calendar` : 'Eventi rimossi: nessun ritiro da sincronizzare');
+        });
+    },
+
+    async gcalRemove() {
+        if (!(await askConfirm('Rimuovere da Google Calendar tutti gli eventi creati da Raccolta Smart?', 'Rimuovi'))) return;
+        await run(async () => { toast(`Rimossi ${await removeGoogleEvents()} eventi`); });
+    },
+
+    async resetAll() {
+        if (!(await askConfirm('Ripristinare tutto ai valori iniziali? Orari, tipi di rifiuto e impostazioni verranno cancellati.', 'Ripristina'))) return;
+        try { await wipeReminders(); } catch (e) { /* best effort */ }
+        Object.values(KEYS).forEach(lsRemove);
+        location.reload();
+    }
+};
+
+const changes = {
+    setNotifTime(el) {
+        if (!/^\d{2}:\d{2}$/.test(el.value)) return;
+        settings.notifTime = el.value;
+        markCalendarDirty();
+        saveSettings();
+        touch();
+        renderSettings();
+        toast(`Orario promemoria: ${el.value}`);
+    },
+
+    toggleNotif: el => run(() => (el.checked ? enableNotifications() : disableNotifications())),
+
+    setGcalReminder(el) {
+        settings.gcalReminder = Number(el.value) || 0;
+        markCalendarDirty();
+        saveSettings();
+        renderSettings();
+    },
+
+    setClientId(el) {
+        settings.gcalClientId = el.value.trim();
+        resetGoogleSession();
+        saveSettings();
+        renderSettings();
+    }
+};
+
+return { renderSettings, actions, changes };
+})();
+__m['main'] = (function () {
+// Punto di ingresso: navigazione, gestione eventi (delegation), service worker, timer.
+const { APP_VERSION } = __m['config'];
+const { onDataChange } = __m['state'];
+const { $, haptic, toast, ymd } = __m['util'];
+const { markCalendarDirty } = __m['calendar'];
+const { checkDueNow, rebuildReminders } = __m['reminders'];
+const dashboard = __m['views/dashboard'];
+const scheduleView = __m['views/schedule-view'];
+const guide = __m['views/guide-view'];
+const settingsView = __m['views/settings-view'];
+
+/* ---------- Navigazione ---------- */
+const TABS = {
+    dashboard: dashboard.renderDashboard,
+    schedule: scheduleView.renderSchedule,
+    guide: guide.renderGuide,
+    settings: settingsView.renderSettings
+};
+
+function switchTab(tabId, silent) {
+    if (!silent) haptic();
+    Object.keys(TABS).forEach(t => {
+        $(`tab-${t}`).hidden = t !== tabId;
+        const b = $(`btn-${t}`);
+        if (t === tabId) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    TABS[tabId]();
+    window.scrollTo({ top: 0 });
+}
+
+/* ---------- Eventi: un solo listener per click e uno per change ---------- */
+const actions = {
+    ...scheduleView.actions,
+    ...guide.actions,
+    ...settingsView.actions,
+    switchTab: el => switchTab(el.dataset.tab),
+    closeDialog: el => $(el.dataset.target).close()
+};
+const changes = {
+    ...dashboard.changes,
+    ...scheduleView.changes,
+    ...settingsView.changes
+};
+
+document.addEventListener('click', e => {
+    const el = e.target.closest('[data-action]');
+    const fn = el && actions[el.dataset.action];
+    if (fn) fn(el, e);
+});
+document.addEventListener('change', e => {
+    const el = e.target.closest('[data-change]');
+    const fn = el && changes[el.dataset.change];
+    if (fn) fn(el, e);
+});
+$('typeForm').addEventListener('submit', guide.saveTypeFromForm);
+
+/* ---------- Dati cambiati: Calendar da risincronizzare + coda promemoria ---------- */
+onDataChange(() => { markCalendarDirty(); rebuildReminders(); });
+
+/* ---------- Rete e service worker ---------- */
+function updateOnline() {
+    const el = $('syncStatus');
+    el.textContent = navigator.onLine ? 'Online' : 'Offline';
+    el.className = 'pill' + (navigator.onLine ? ' ok' : '');
+}
+
+function setupServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (hadController) toast('App aggiornata a una nuova versione.', { label: 'Ricarica', fn: () => location.reload() });
+    });
+    navigator.serviceWorker.register(`./sw.js?v=${encodeURIComponent(APP_VERSION)}`)
+        .then(() => rebuildReminders())
+        .catch(err => console.warn('Service worker non registrato:', err));
+}
+
+/* ---------- Avvio ---------- */
+$('appVersion').textContent = `v${APP_VERSION}`;
+document.title = `Raccolta Smart v${APP_VERSION}`;
+switchTab('dashboard', true);
+updateOnline();
+window.addEventListener('online', updateOnline);
+window.addEventListener('offline', updateOnline);
+
+const dayChanged = () => dashboard.renderedDay() !== ymd(new Date());
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (dayChanged() && !$('tab-dashboard').hidden) dashboard.renderDashboard();
+    rebuildReminders();
+});
+setInterval(() => { if (dayChanged()) { if (!$('tab-dashboard').hidden) dashboard.renderDashboard(); rebuildReminders(); } }, 60000);
+setInterval(checkDueNow, 30000); // notifiche dovute mentre l'app è aperta
+setupServiceWorker();
+
+return {  };
+})();
+})();
+</script>
 </body>
 </html>
