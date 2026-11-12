@@ -263,6 +263,8 @@ dialog h3 { font-size: 1rem; }
         </div>
     </dialog>
 
+    <input type="file" id="restoreFile" accept=".json,application/json" hidden data-change="restoreFile">
+
     <div id="toast" role="status" aria-live="polite" hidden></div>
 
     <script>
@@ -271,7 +273,7 @@ dialog h3 { font-size: 1rem; }
 const __m = {};
 __m['config'] = (function () {
 // Costanti e valori predefiniti dell'app.
-const APP_VERSION = '6.1.0';
+const APP_VERSION = '6.2.0';
 
 const KEYS = {
     types: 'raccolta_smart_types',
@@ -318,6 +320,7 @@ const DEFAULT_SETTINGS = {
     notifEnabled: false,         // notifiche locali
     gcalAlerts: false,           // gli avvisi arrivano da Google Calendar (niente notifiche dell'app)
     gcalClientId: '',
+    lastBackup: '',
     gcalReminder: 0,
     gcalSynced: false,
     gcalDirty: false,
@@ -419,42 +422,42 @@ __m['state'] = (function () {
 const { KEYS, DEFAULT_TYPES, DEFAULT_SETTINGS } = __m['config'];
 const { lsGet, lsSet, clone, parseYMD } = __m['util'];
 
-function loadTypes() {
-    const stored = lsGet(KEYS.types, null);
+// Convalida e normalizza i tipi (da localStorage o da un backup). Restituisce null se non validi.
+function normalizeTypes(stored) {
     if (Array.isArray(stored) && stored.every(t => t && typeof t.id === 'string' && typeof t.name === 'string')) {
-        return stored.map(t => ({ id: t.id, name: t.name, icon: t.icon || '♻️', desc: t.desc || '' }));
+        return stored.map(t => ({ id: t.id, name: String(t.name).slice(0, 40), icon: t.icon || '♻️', desc: String(t.desc || '').slice(0, 400) }));
     }
-    return clone(DEFAULT_TYPES);
+    return null;
 }
 
-function loadSchedule() {
-    const stored = lsGet(KEYS.schedule, null);
-    const fallback = {
-        1: [{ type: 'organico', freq: 'every', refDate: '' }],
-        2: [{ type: 'plastica', freq: 'every', refDate: '' }],
-        3: [{ type: 'organico', freq: 'every', refDate: '' }, { type: 'vetro', freq: 'every', refDate: '' }],
-        4: [{ type: 'carta', freq: 'every', refDate: '' }],
-        5: [{ type: 'organico', freq: 'every', refDate: '' }],
-        6: [{ type: 'indifferenziato', freq: 'every', refDate: '' }],
-        0: []
-    };
-    const src = stored && typeof stored === 'object' ? stored : fallback;
+const DEFAULT_SCHEDULE = {
+    1: [{ type: 'organico', freq: 'every', refDate: '' }],
+    2: [{ type: 'plastica', freq: 'every', refDate: '' }],
+    3: [{ type: 'organico', freq: 'every', refDate: '' }, { type: 'vetro', freq: 'every', refDate: '' }],
+    4: [{ type: 'carta', freq: 'every', refDate: '' }],
+    5: [{ type: 'organico', freq: 'every', refDate: '' }],
+    6: [{ type: 'indifferenziato', freq: 'every', refDate: '' }],
+    0: []
+};
+
+// Normalizza gli orari. Senza data di riferimento una cadenza alterna vale ogni settimana.
+function normalizeSchedule(stored) {
+    const src = stored && typeof stored === 'object' ? stored : DEFAULT_SCHEDULE;
     const out = {};
     for (let d = 0; d < 7; d++) {
         const list = Array.isArray(src[d]) ? src[d] : [];
-        out[d] = list.filter(i => i && typeof i.type === 'string').map(i => {
-            const freq = ['every', 'odd', 'even'].includes(i.freq) ? i.freq : 'every';
-            // Senza data di riferimento una cadenza alterna vale ogni settimana (come nelle versioni precedenti)
-            const refDate = parseYMD(i.refDate) ? i.refDate : '';
-            return { type: i.type, freq, refDate };
-        });
+        out[d] = list.filter(i => i && typeof i.type === 'string').map(i => ({
+            type: i.type,
+            freq: ['every', 'odd', 'even'].includes(i.freq) ? i.freq : 'every',
+            refDate: parseYMD(i.refDate) ? i.refDate : ''
+        }));
     }
     return out;
 }
 
 const state = {
-    types: loadTypes(),
-    schedule: loadSchedule(),
+    types: normalizeTypes(lsGet(KEYS.types, null)) || clone(DEFAULT_TYPES),
+    schedule: normalizeSchedule(lsGet(KEYS.schedule, null)),
     settings: Object.assign({}, DEFAULT_SETTINGS, lsGet(KEYS.settings, {}))
 };
 
@@ -470,7 +473,7 @@ const listeners = new Set();
 const onDataChange = fn => listeners.add(fn);
 const touch = () => listeners.forEach(fn => { try { fn(); } catch (e) { console.error(e); } });
 
-return { state, getType, typeInfo, saveTypes, saveSchedule, saveSettings, onDataChange, touch };
+return { normalizeTypes, normalizeSchedule, state, getType, typeInfo, saveTypes, saveSchedule, saveSettings, onDataChange, touch };
 })();
 __m['schedule'] = (function () {
 // Logica pura del calendario di raccolta: quali rifiuti si ritirano in un dato giorno.
@@ -857,6 +860,135 @@ async function wipeReminders() {
 
 return { notifSupported, notifGranted, getRegistration, buildQueue, rebuildReminders, checkDueNow, enableNotifications, disableNotifications, sendTestNotification, wipeReminders };
 })();
+__m['backup'] = (function () {
+// Backup e ripristino dei dati su dispositivo (orari, tipi di rifiuto, impostazioni).
+const { APP_VERSION, DEFAULT_SETTINGS } = __m['config'];
+const { state, normalizeSchedule, normalizeTypes, saveSchedule, saveSettings, saveTypes, touch } = __m['state'];
+const { ymd } = __m['util'];
+
+const { settings } = state;
+const BACKUP_FORMAT = 'raccolta-smart-backup';
+const FOLDER_NAME = 'RaccoltaSmart-Backup';
+// Solo preferenze personali: niente stato di sincronizzazione o permessi legati al dispositivo
+const SETTINGS_KEYS = ['holidays', 'notifTime', 'gcalReminder', 'gcalClientId', 'gcalAlerts'];
+
+function buildBackup() {
+    const prefs = {};
+    SETTINGS_KEYS.forEach(k => { prefs[k] = settings[k]; });
+    return { format: BACKUP_FORMAT, appVersion: APP_VERSION, createdAt: new Date().toISOString(), types: state.types, schedule: state.schedule, settings: prefs };
+}
+
+const backupFileName = () => `RaccoltaSmart-backup-${ymd(new Date())}.json`;
+const backupBlob = () => new Blob([JSON.stringify(buildBackup(), null, 2)], { type: 'application/json' });
+
+function markBackupDone() {
+    settings.lastBackup = new Date().toISOString();
+    saveSettings();
+}
+
+/* ---------- Capacità del dispositivo ---------- */
+const canPickFolder = () => 'showDirectoryPicker' in window && window.isSecureContext;
+function canShareFile() {
+    try { return !!navigator.canShare && navigator.canShare({ files: [new File(['{}'], 'a.json', { type: 'application/json' })] }); }
+    catch (e) { return false; }
+}
+
+/* ---------- Cartella scelta (solo browser desktop): handle salvato in IndexedDB ---------- */
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const r = indexedDB.open('raccolta-smart', 1);
+        r.onupgradeneeded = () => r.result.createObjectStore('kv');
+        r.onsuccess = () => resolve(r.result);
+        r.onerror = () => reject(r.error);
+    });
+}
+async function kv(mode, key, value) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const store = db.transaction('kv', mode === 'get' ? 'readonly' : 'readwrite').objectStore('kv');
+        const q = mode === 'get' ? store.get(key) : store.put(value, key);
+        q.onsuccess = () => resolve(q.result);
+        q.onerror = () => reject(q.error);
+    });
+}
+
+async function getFolderName() {
+    try { const h = await kv('get', 'dir'); return h ? h.name : ''; } catch (e) { return ''; }
+}
+
+async function chooseFolder() {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite', id: 'raccolta-smart' });
+    await kv('put', 'dir', handle);
+    return handle.name;
+}
+
+async function saveToFolder() {
+    let handle;
+    try { handle = await kv('get', 'dir'); } catch (e) { return null; }
+    if (!handle) return null;
+    let perm = await handle.queryPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') perm = await handle.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') throw new Error('Permesso di scrittura sulla cartella negato.');
+    const dir = await handle.getDirectoryHandle(FOLDER_NAME, { create: true });
+    const file = await dir.getFileHandle(backupFileName(), { create: true });
+    const w = await file.createWritable();
+    await w.write(backupBlob());
+    await w.close();
+    return `${handle.name}/${FOLDER_NAME}`;
+}
+
+/* ---------- Salvataggio ---------- */
+// Se è stata scelta una cartella ci scrive dentro, altrimenti scarica il file (sul telefono: cartella Download).
+async function saveBackup() {
+    const folder = await saveToFolder();
+    if (folder) { markBackupDone(); return { where: 'folder', folder }; }
+    const url = URL.createObjectURL(backupBlob());
+    const a = document.createElement('a');
+    a.href = url; a.download = backupFileName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    markBackupDone();
+    return { where: 'download', name: backupFileName() };
+}
+
+// Foglio di condivisione del sistema: Drive, File, WhatsApp, email...
+async function shareBackup() {
+    const file = new File([backupBlob()], backupFileName(), { type: 'application/json' });
+    try { await navigator.share({ files: [file], title: 'Backup Raccolta Smart' }); }
+    catch (e) { if (e && e.name === 'AbortError') return false; throw e; }
+    markBackupDone();
+    return true;
+}
+
+/* ---------- Ripristino ---------- */
+// Legge e convalida un file di backup. Lancia un errore leggibile se non è valido.
+async function readBackupFile(file) {
+    if (file.size > 2 * 1024 * 1024) throw new Error('Il file è troppo grande per essere un backup di Raccolta Smart.');
+    let data;
+    try { data = JSON.parse(await file.text()); } catch (e) { throw new Error('Il file non è un backup valido (JSON non leggibile).'); }
+    if (!data || data.format !== BACKUP_FORMAT) throw new Error('Questo file non è un backup di Raccolta Smart.');
+    const types = normalizeTypes(data.types);
+    if (!types) throw new Error('Il backup è danneggiato: tipi di rifiuto non validi.');
+    if (!data.schedule || typeof data.schedule !== 'object') throw new Error('Il backup è danneggiato: orari mancanti.');
+    return { createdAt: data.createdAt || '', types, schedule: normalizeSchedule(data.schedule), settings: data.settings || {} };
+}
+
+function applyBackup(b) {
+    state.types = b.types;
+    state.schedule = b.schedule;
+    SETTINGS_KEYS.forEach(k => {
+        if (!(k in b.settings)) return;
+        const v = b.settings[k];
+        if (typeof v === typeof DEFAULT_SETTINGS[k]) settings[k] = v;
+    });
+    if (!/^\d{2}:\d{2}$/.test(settings.notifTime)) settings.notifTime = DEFAULT_SETTINGS.notifTime;
+    if (settings.gcalSynced) settings.gcalDirty = true; // Calendar va aggiornato con i nuovi dati
+    saveTypes(); saveSchedule(); saveSettings();
+    touch();
+}
+
+return { buildBackup, backupFileName, canPickFolder, canShareFile, getFolderName, chooseFolder, saveBackup, shareBackup, readBackupFile, applyBackup };
+})();
 __m['views/dashboard'] = (function () {
 // Scheda Dashboard: cosa esporre stasera e prossimi ritiri.
 const { dayById } = __m['config'];
@@ -1100,8 +1232,13 @@ const {
     disableNotifications, enableNotifications, notifGranted, notifSupported, sendTestNotification, wipeReminders
 } = __m['reminders'];
 const { dayById } = __m['config'];
+const {
+    applyBackup, canPickFolder, canShareFile, chooseFolder, getFolderName, readBackupFile, saveBackup, shareBackup
+} = __m['backup'];
 
 const { settings } = state;
+let folderName = '';
+getFolderName().then(n => { folderName = n; });
 
 function notifStatus() {
     if (!notifSupported()) return 'Questo browser non supporta le notifiche.';
@@ -1185,6 +1322,18 @@ function renderSettings() {
         </div>
 
         <div class="card">
+            <h3 class="card-title"><span aria-hidden="true">💾</span> Backup</h3>
+            <p class="muted">Salva orari, tipi di rifiuto e impostazioni in un file${canPickFolder() ? ' (in una cartella a tua scelta)' : ' (sul telefono finisce nella cartella Download)'}. Ripristinalo quando serve, anche su un altro dispositivo.</p>
+            <p class="muted small">${settings.lastBackup ? `Ultimo backup: ${esc(new Date(settings.lastBackup).toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' }))}` : 'Nessun backup ancora salvato.'}${folderName ? ` · cartella: <b>${esc(folderName)}/RaccoltaSmart-Backup</b>` : ''}</p>
+            <div class="grid2">
+                <button class="btn btn-primary" data-action="backupSave">Salva backup</button>
+                <button class="btn btn-ghost" data-action="backupRestore">Ripristina</button>
+                ${canShareFile() ? '<button class="btn btn-ghost" data-action="backupShare">Condividi…</button>' : ''}
+                ${canPickFolder() ? `<button class="btn btn-ghost" data-action="backupFolder">${folderName ? 'Cambia cartella' : 'Scegli cartella'}</button>` : ''}
+            </div>
+        </div>
+
+        <div class="card">
             <div class="row between">
                 <span class="muted">Raccolta Smart v${esc(APP_VERSION)}</span>
                 <button class="btn btn-danger btn-sm" data-action="resetAll">Ripristina tutto</button>
@@ -1246,6 +1395,27 @@ const actions = {
         await run(async () => { toast(`Rimossi ${await removeGoogleEvents()} eventi`); });
     },
 
+    async backupSave() {
+        try {
+            const r = await saveBackup();
+            toast(r.where === 'folder' ? `Backup salvato in ${r.folder}` : `Backup scaricato: ${r.name}`);
+        } catch (e) { toast(e.message || 'Backup non riuscito'); }
+        renderSettings();
+    },
+
+    async backupShare() {
+        try { if (await shareBackup()) toast('Backup condiviso'); } catch (e) { toast(e.message || 'Condivisione non riuscita'); }
+        renderSettings();
+    },
+
+    async backupFolder() {
+        try { folderName = await chooseFolder(); toast(`Cartella impostata: ${folderName}`); }
+        catch (e) { if (!e || e.name !== 'AbortError') toast((e && e.message) || 'Cartella non impostata'); }
+        renderSettings();
+    },
+
+    backupRestore() { $('restoreFile').value = ''; $('restoreFile').click(); },
+
     async resetAll() {
         if (!(await askConfirm('Ripristinare tutto ai valori iniziali? Orari, tipi di rifiuto e impostazioni verranno cancellati.', 'Ripristina'))) return;
         try { await wipeReminders(); } catch (e) { /* best effort */ }
@@ -1255,6 +1425,20 @@ const actions = {
 };
 
 const changes = {
+    async restoreFile(el) {
+        const file = el.files && el.files[0];
+        if (!file) return;
+        try {
+            const b = await readBackupFile(file);
+            const when = b.createdAt ? new Date(b.createdAt).toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' }) : 'data sconosciuta';
+            const uses = Object.values(b.schedule).reduce((n, l) => n + l.length, 0);
+            if (!(await askConfirm(`Ripristinare il backup del ${when}? (${b.types.length} tipi di rifiuto, ${uses} ritiri). I dati attuali verranno sostituiti.`, 'Ripristina'))) return;
+            applyBackup(b);
+            toast('Backup ripristinato');
+            renderSettings();
+        } catch (e) { toast(e.message || 'Ripristino non riuscito'); }
+    },
+
     setNotifTime(el) {
         if (!/^\d{2}:\d{2}$/.test(el.value)) return;
         settings.notifTime = el.value;
