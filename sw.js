@@ -83,13 +83,17 @@ async function showDueNotifications() {
   if (changed) await writeJSON('__shown.json', shown.slice(-60));
 }
 
+// I controlli vengono messi in coda uno alla volta: due controlli contemporanei non possono duplicare l'avviso
+let checkChain = Promise.resolve();
+const checkDue = () => (checkChain = checkChain.then(showDueNotifications, showDueNotifications));
+
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'CHECK') event.waitUntil(showDueNotifications());
+  if (event.data && event.data.type === 'CHECK') event.waitUntil(checkDue());
 });
 
 // Chrome (PWA installata): controllo periodico anche ad app chiusa, senza server
 self.addEventListener('periodicsync', event => {
-  if (event.tag === 'raccolta-check') event.waitUntil(showDueNotifications());
+  if (event.tag === 'raccolta-check') event.waitUntil(checkDue());
 });
 
 self.addEventListener('notificationclick', event => {

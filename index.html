@@ -23,155 +23,139 @@
 html { -webkit-text-size-adjust: 100%; }
 body {
     background: var(--bg); color: var(--text);
-    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font: 15px/1.35 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     min-height: 100vh;
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
 }
 button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--brand-l); outline-offset: 2px; }
 [hidden] { display: none !important; }
 
-/* Header */
+/* Header compatto */
 header {
-    position: sticky; top: 0; z-index: 40; background: var(--card);
-    border-bottom: 1px solid var(--line);
-    padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    position: sticky; top: 0; z-index: 40; background: var(--card); border-bottom: 1px solid var(--line);
+    padding: calc(6px + env(safe-area-inset-top)) 12px 6px;
 }
-.wrap { max-width: 448px; margin: 0 auto; }
+.wrap { max-width: 480px; margin: 0 auto; }
 .header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; color: var(--brand-l); }
-.brand .logo { font-size: 1.4rem; line-height: 1; }
-.ver {
-    font-size: .72rem; font-weight: 700; color: var(--mute); background: var(--card2);
-    border: 1px solid var(--line2); border-radius: 999px; padding: 2px 8px; letter-spacing: .02em;
-}
-.pill {
-    font-size: .75rem; padding: 4px 10px; border-radius: 999px; background: var(--card2);
-    color: var(--mute); border: 1px solid var(--line2); white-space: nowrap;
-}
+.brand { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.02rem; color: var(--brand-l); }
+.brand .logo { font-size: 1.25rem; line-height: 1; }
+.ver { font-size: .68rem; font-weight: 700; color: var(--mute); background: var(--card2); border: 1px solid var(--line2); border-radius: 999px; padding: 1px 7px; }
+.pill { font-size: .7rem; padding: 2px 8px; border-radius: 999px; background: var(--card2); color: var(--mute); border: 1px solid var(--line2); white-space: nowrap; }
 .pill.ok { color: var(--brand-l); border-color: var(--brand-dd); }
 
-main { max-width: 448px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-section { display: flex; flex-direction: column; gap: 16px; }
+main { max-width: 480px; margin: 0 auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+section { display: flex; flex-direction: column; gap: 10px; }
 
-/* Cards */
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
-.card.tight { padding: 14px; }
-.card.row { flex-direction: row; }
-.card-title { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); display: flex; gap: 6px; align-items: center; }
-h2.page-title { font-size: 1.05rem; font-weight: 700; }
-.row { display: flex; align-items: center; gap: 12px; }
+/* Card */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.card-title { font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); display: flex; gap: 6px; align-items: center; }
+h2.page-title { font-size: 1rem; font-weight: 700; }
+.row { display: flex; align-items: center; gap: 10px; }
 .row.between { justify-content: space-between; }
 .grow { flex: 1; min-width: 0; }
 .stack { display: flex; flex-direction: column; gap: 8px; }
-.muted { color: var(--mute); font-size: .8rem; }
-.faint { color: var(--faint); font-size: .8rem; font-style: italic; }
+.muted { color: var(--mute); font-size: .78rem; }
+.small { font-size: .75rem; }
+.faint { color: var(--faint); font-size: .78rem; font-style: italic; }
 .strong { font-weight: 700; }
 .warn { color: var(--warn); }
-.danger-text { color: var(--danger); }
+.nowrap { white-space: nowrap; }
 
-.trash { display: flex; gap: 12px; align-items: flex-start; padding: 4px 0; }
-.trash .ico { font-size: 1.7rem; line-height: 1.1; }
+/* Dashboard */
+.trash { display: flex; gap: 10px; align-items: flex-start; padding: 2px 0; }
+.trash + .trash { border-top: 1px solid var(--line); padding-top: 8px; }
+.trash .ico { font-size: 1.6rem; line-height: 1.1; }
 .trash .nm { font-weight: 700; font-size: 1.05rem; }
-.trash .ds { font-size: .8rem; color: var(--mute); margin-top: 2px; }
-.banner { display: flex; gap: 10px; align-items: flex-start; font-size: 1rem; font-weight: 500; }
-.banner .ico { font-size: 1.4rem; }
-
-.upc { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: .9rem; }
+.trash .ds { font-size: .76rem; color: var(--mute); margin-top: 1px; }
+.banner { display: flex; gap: 8px; align-items: flex-start; font-size: .95rem; font-weight: 500; }
+.banner .ico { font-size: 1.3rem; }
+.upc { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); font-size: .86rem; }
 .upc:first-of-type { border-top: 0; }
-.upc .when { color: var(--mute); white-space: nowrap; min-width: 92px; }
+.upc .when { color: var(--mute); white-space: nowrap; min-width: 88px; }
 .upc .what { text-align: right; }
 
-/* Buttons */
+/* Pulsanti */
 .btn {
-    min-height: 44px; padding: 8px 16px; border-radius: 12px; border: 1px solid transparent;
-    font-weight: 700; font-size: .85rem; cursor: pointer; transition: background .15s, transform .05s;
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; text-align: center;
+    min-height: 40px; padding: 6px 12px; border-radius: 10px; border: 1px solid transparent; font-weight: 700; font-size: .82rem;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; text-align: center;
 }
 .btn:active { transform: scale(.98); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn-primary { background: var(--brand-d); color: #fff; }
-.btn-primary:hover { background: #10b981; }
 .btn-ghost { background: var(--card2); border-color: var(--line2); color: var(--text); }
-.btn-ghost:hover { background: #1e2b47; }
 .btn-danger { background: rgba(220,38,38,.15); border-color: rgba(185,28,28,.6); color: var(--danger); }
-.btn-danger:hover { background: rgba(220,38,38,.28); }
-.btn-sm { min-height: 40px; padding: 6px 12px; font-size: .8rem; }
+.btn-sm { min-height: 36px; padding: 4px 10px; font-size: .78rem; }
 .btn-block { width: 100%; }
-.icon-btn { min-width: 44px; min-height: 44px; padding: 0; font-size: 1.1rem; }
+.icon-btn { min-width: 40px; min-height: 40px; padding: 0; font-size: 1rem; flex: none; }
 
-/* Form */
-label.lbl { display: block; font-size: .78rem; color: var(--mute); margin-bottom: 4px; }
+/* Campi */
+label.lbl { display: block; font-size: .74rem; color: var(--mute); margin-bottom: 3px; }
 input[type=text], input[type=time], input[type=date], select, textarea {
-    width: 100%; min-height: 44px; background: var(--card2); border: 1px solid var(--line2);
-    border-radius: 10px; padding: 8px 10px; color: var(--text); font-size: 16px;
+    width: 100%; min-height: 40px; background: var(--card2); border: 1px solid var(--line2); border-radius: 9px; padding: 6px 8px; color: var(--text); font-size: 16px;
 }
-textarea { resize: vertical; min-height: 88px; }
+textarea { resize: vertical; min-height: 76px; }
 input:disabled { opacity: .5; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-.switch { position: relative; display: inline-block; width: 52px; height: 30px; flex: none; }
+.switch { position: relative; display: inline-block; width: 48px; height: 28px; flex: none; }
 .switch input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
+.switch input:disabled { cursor: not-allowed; }
 .switch .track { position: absolute; inset: 0; background: var(--line2); border-radius: 999px; transition: background .2s; }
-.switch .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: #fff; border-radius: 50%; transition: transform .2s; }
+.switch .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: #fff; border-radius: 50%; transition: transform .2s; }
 .switch input:checked + .track { background: var(--brand-d); }
-.switch input:checked + .track::after { transform: translateX(22px); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+.switch input:disabled + .track { opacity: .45; }
 .switch input:focus-visible + .track { outline: 2px solid var(--brand-l); outline-offset: 2px; }
 
-/* Schedule */
-.day { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+/* Orari: righe compatte */
+.day { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 .day-name { font-weight: 800; color: var(--brand-l); }
-.item { background: var(--card2); border: 1px solid var(--line2); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+.item { display: flex; flex-direction: column; gap: 6px; }
+.irow { display: flex; align-items: center; gap: 6px; }
+.irow select.cad { width: 7.6rem; flex: none; padding-left: 6px; padding-right: 2px; font-size: 14px; }
+.irow select.grow { font-size: 15px; }
 
-/* Guide */
-.type { display: flex; gap: 12px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
-.type .ico { font-size: 1.8rem; line-height: 1.1; }
-.type .actions { display: flex; gap: 6px; flex: none; }
+/* Guida */
+.type { display: flex; gap: 10px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.type .ico { font-size: 1.5rem; line-height: 1.1; }
+.type .actions { display: flex; gap: 4px; flex: none; }
 
-details { background: var(--card2); border: 1px solid var(--line2); border-radius: 12px; padding: 10px 12px; }
-summary { cursor: pointer; font-weight: 700; font-size: .85rem; min-height: 28px; }
-details[open] summary { margin-bottom: 8px; }
-ol.steps { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: .8rem; color: var(--mute); }
-code { background: #0b1220; border: 1px solid var(--line2); border-radius: 6px; padding: 1px 5px; font-size: .75rem; word-break: break-all; color: var(--brand-l); }
+details { background: var(--card2); border: 1px solid var(--line2); border-radius: 10px; padding: 8px 10px; }
+details details { background: transparent; border-color: var(--line); }
+summary { cursor: pointer; font-weight: 700; font-size: .82rem; min-height: 26px; display: flex; align-items: center; }
+details[open] > summary { margin-bottom: 6px; }
+ol.steps { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: .76rem; color: var(--mute); }
+code { background: #0b1220; border: 1px solid var(--line2); border-radius: 6px; padding: 1px 5px; font-size: .72rem; word-break: break-all; color: var(--brand-l); }
 
-/* Nav */
-nav {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--card);
-    border-top: 1px solid var(--line); padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
-}
-nav .wrap { display: flex; gap: 4px; }
+/* Navigazione */
+nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--card); border-top: 1px solid var(--line); padding: 4px 6px calc(4px + env(safe-area-inset-bottom)); }
+nav .wrap { display: flex; gap: 2px; }
 nav button {
-    flex: 1; min-height: 48px; border: 0; border-radius: 10px; background: transparent; color: #cbd5e1;
-    font-size: .78rem; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    flex: 1; min-height: 46px; border: 0; border-radius: 10px; background: transparent; color: #cbd5e1; font-size: .7rem; font-weight: 600; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
 }
-nav button .ni { font-size: 1.15rem; line-height: 1; }
-nav button[aria-current=page] { background: var(--brand-d); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+nav button .ni { font-size: 1.1rem; line-height: 1.1; }
+nav button[aria-current=page] { background: var(--brand-d); color: #fff; }
 
 /* Dialog */
-dialog {
-    border: 1px solid var(--line2); background: var(--card); color: var(--text); border-radius: 20px;
-    padding: 20px; width: min(92vw, 420px); max-height: 88vh; overflow: auto; margin: auto;
-}
+dialog { border: 1px solid var(--line2); background: var(--card); color: var(--text); border-radius: 16px; padding: 14px; width: min(94vw, 420px); max-height: 88vh; overflow: auto; margin: auto; }
 dialog::backdrop { background: rgba(0,0,0,.7); }
-dialog form, .dlg-body { display: flex; flex-direction: column; gap: 14px; }
-dialog h3 { font-size: 1.05rem; }
-.emoji-pick { display: flex; flex-wrap: wrap; gap: 6px; }
-.emoji-pick button { min-width: 40px; min-height: 40px; font-size: 1.25rem; background: var(--card2); border: 1px solid var(--line2); border-radius: 10px; cursor: pointer; }
-.emoji-pick button:hover { border-color: var(--brand); }
-.err { color: var(--danger); font-size: .8rem; min-height: 1em; }
+dialog form, .dlg-body { display: flex; flex-direction: column; gap: 10px; }
+dialog h3 { font-size: 1rem; }
+.emoji-pick { display: flex; flex-wrap: wrap; gap: 4px; }
+.emoji-pick button { min-width: 38px; min-height: 38px; font-size: 1.15rem; background: var(--card2); border: 1px solid var(--line2); border-radius: 8px; cursor: pointer; }
+.err { color: var(--danger); font-size: .78rem; min-height: 1em; }
 
 /* Toast */
 #toast {
-    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(92px + env(safe-area-inset-bottom));
-    z-index: 100; background: #e2e8f0; color: #0f172a; padding: 10px 14px; border-radius: 12px; font-size: .85rem; font-weight: 600;
-    box-shadow: 0 6px 20px rgba(0,0,0,.5); max-width: min(92vw, 420px); display: flex; gap: 12px; align-items: center;
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(66px + env(safe-area-inset-bottom)); z-index: 100;
+    background: #e2e8f0; color: #0f172a; padding: 8px 12px; border-radius: 10px; font-size: .82rem; font-weight: 600;
+    box-shadow: 0 6px 20px rgba(0,0,0,.5); max-width: min(92vw, 420px); display: flex; gap: 10px; align-items: center;
 }
-#toast button { background: none; border: 0; color: #047857; font-weight: 800; cursor: pointer; min-height: 32px; }
+#toast button { background: none; border: 0; color: #047857; font-weight: 800; cursor: pointer; min-height: 30px; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-
-.hint-ok { color: var(--brand-l); }
 
 </style>
 </head>
@@ -197,22 +181,11 @@ dialog h3 { font-size: 1.05rem; }
                 <h2 class="card-title"><span aria-hidden="true">📅</span> Prossimi ritiri</h2>
                 <div id="upcoming"></div>
             </div>
-
-            <div class="card tight row between">
-                <div class="grow">
-                    <label for="holidayToggle" class="strong" style="display:block;font-size:.9rem">Festivi nazionali</label>
-                    <span class="muted">Segnala i ritiri che cadono in giorni festivi</span>
-                </div>
-                <span class="switch"><input type="checkbox" id="holidayToggle" data-change="setHolidays"><span class="track"></span></span>
-            </div>
         </section>
 
         <!-- ORARI -->
         <section id="tab-schedule" hidden>
-            <div>
-                <h2 class="page-title">Configurazione orari</h2>
-                <p class="muted">Indica il giorno in cui passa il ritiro. Le modifiche si salvano da sole.</p>
-            </div>
+            <p class="muted">Giorno in cui passa il ritiro. Le modifiche si salvano da sole.</p>
             <div id="scheduleConfigList" class="stack" style="gap:12px"></div>
         </section>
 
@@ -220,18 +193,16 @@ dialog h3 { font-size: 1.05rem; }
         <section id="tab-guide" hidden>
             <div class="row between">
                 <div class="grow">
-                    <h2 class="page-title">Guida ai rifiuti</h2>
-                    <p class="muted">Gestisci i tipi di rifiuto: nome, icona e descrizione.</p>
+                    <h2 class="page-title">Tipi di rifiuto</h2>
                 </div>
                 <button class="btn btn-primary btn-sm" data-action="newType">+ Nuovo tipo</button>
             </div>
             <div id="guideList" class="stack"></div>
-            <button class="btn btn-ghost btn-block" data-action="restoreTypes">Ripristina i tipi predefiniti</button>
+            <button class="btn btn-ghost btn-sm" data-action="restoreTypes">Ripristina i tipi predefiniti</button>
         </section>
 
         <!-- IMPOSTAZIONI -->
         <section id="tab-settings" hidden>
-            <h2 class="page-title">Impostazioni</h2>
             <div id="settingsBody" class="stack" style="gap:16px"></div>
         </section>
     </main>
@@ -286,7 +257,7 @@ dialog h3 { font-size: 1.05rem; }
     <dialog id="linksDialog" aria-labelledby="linksTitle">
         <div class="dlg-body">
             <h3 id="linksTitle">Aggiungi a Google Calendar</h3>
-            <p class="muted">Ogni pulsante apre Google Calendar con l'evento già compilato (si ripete ogni settimana). Controlla e premi «Salva».</p>
+            <p class="muted">Ogni pulsante apre Calendar con l'evento già compilato. Aggiungili una sola volta, poi premi «Salva».</p>
             <div id="linksList" class="stack"></div>
             <button type="button" class="btn btn-ghost" data-action="closeDialog" data-target="linksDialog">Chiudi</button>
         </div>
@@ -300,7 +271,7 @@ dialog h3 { font-size: 1.05rem; }
 const __m = {};
 __m['config'] = (function () {
 // Costanti e valori predefiniti dell'app.
-const APP_VERSION = '6.0.0';
+const APP_VERSION = '6.1.0';
 
 const KEYS = {
     types: 'raccolta_smart_types',
@@ -335,7 +306,7 @@ const DAYS = [
 const dayById = id => DAYS.find(d => d.id === id);
 
 const REMINDER_OPTIONS = [
-    [0, "All'orario dell'evento"],
+    [0, "All'ora esatta"],
     [10, '10 minuti prima'],
     [30, '30 minuti prima'],
     [60, '1 ora prima']
@@ -345,6 +316,7 @@ const DEFAULT_SETTINGS = {
     holidays: true,
     notifTime: '20:00',          // orario unico per notifiche ed eventi Calendar
     notifEnabled: false,         // notifiche locali
+    gcalAlerts: false,           // gli avvisi arrivano da Google Calendar (niente notifiche dell'app)
     gcalClientId: '',
     gcalReminder: 0,
     gcalSynced: false,
@@ -445,7 +417,7 @@ return { $, esc, pad, clone, lsGet, lsSet, lsRemove, haptic, toast, askConfirm, 
 __m['state'] = (function () {
 // Stato dell'app (tipi, orari, impostazioni) e persistenza su localStorage.
 const { KEYS, DEFAULT_TYPES, DEFAULT_SETTINGS } = __m['config'];
-const { lsGet, lsSet, clone, parseYMD, ymd } = __m['util'];
+const { lsGet, lsSet, clone, parseYMD } = __m['util'];
 
 function loadTypes() {
     const stored = lsGet(KEYS.types, null);
@@ -472,8 +444,8 @@ function loadSchedule() {
         const list = Array.isArray(src[d]) ? src[d] : [];
         out[d] = list.filter(i => i && typeof i.type === 'string').map(i => {
             const freq = ['every', 'odd', 'even'].includes(i.freq) ? i.freq : 'every';
-            let refDate = parseYMD(i.refDate) ? i.refDate : '';
-            if (freq !== 'every' && !refDate) refDate = ymd(new Date()); // le cadenze alterne richiedono una data valida
+            // Senza data di riferimento una cadenza alterna vale ogni settimana (come nelle versioni precedenti)
+            const refDate = parseYMD(i.refDate) ? i.refDate : '';
             return { type: i.type, freq, refDate };
         });
     }
@@ -539,41 +511,47 @@ function eventTime() {
 }
 
 /* ---------- Eventi ---------- */
-// Un evento ricorrente per ogni gruppo giorno+cadenza, la sera prima del ritiro all'orario scelto.
+// Un solo evento per sera: per ogni giorno di ritiro si uniscono i rifiuti "ogni settimana" e quelli
+// delle settimane alterne. Se il contenuto cambia tra settimana A e B nascono due eventi ricorrenti
+// ogni 2 settimane (uno per fase), mai due eventi nella stessa sera.
 function buildEventGroups() {
-    const groups = new Map();
-    DAYS.forEach(d => {
-        (state.schedule[d.id] || []).forEach(item => {
-            if (!getType(item.type)) return;
-            const phase = itemPhase(item);
-            const key = `${d.id}-${phase}`;
-            if (!groups.has(key)) groups.set(key, { key, dow: d.id, phase, items: [] });
-            groups.get(key).items.push(item);
-        });
-    });
-
     const { h, m } = eventTime();
     const now = new Date();
     const out = [];
-    groups.forEach(g => {
-        let first = null;
-        for (let i = 0; i <= 30 && !first; i++) {
-            const collect = addDays(startOfDay(now), i);
-            if (collect.getDay() !== g.dow || !phaseMatches(g.phase, collect)) continue;
-            const eve = addDays(collect, -1);
-            const start = new Date(eve.getFullYear(), eve.getMonth(), eve.getDate(), h, m);
-            if (start.getTime() > now.getTime()) first = start;
-        }
-        if (!first) return;
-        const list = g.items.map(i => getType(i.type));
-        const body = list.map(t => `${t.icon} ${t.name}${t.desc ? '\n' + t.desc : ''}`).join('\n\n');
-        out.push({
-            key: g.key,
-            start: first,
-            end: new Date(first.getTime() + EVENT_MINUTES * 60000),
-            summary: `♻️ Esporre: ${list.map(t => t.name).join(', ')}`,
-            description: `Da esporre stasera per il ritiro di ${dayById(g.dow).name.toLowerCase()}:\n\n${body}\n\n— Raccolta Smart`,
-            rrule: `FREQ=WEEKLY;INTERVAL=${g.phase < 0 ? 1 : 2};BYDAY=${dayById(first.getDay()).rrule}`
+    DAYS.forEach(d => {
+        const itemsFor = phase => {
+            const seen = new Set();
+            return (state.schedule[d.id] || []).filter(i => {
+                const p = itemPhase(i);
+                if (!getType(i.type) || seen.has(i.type) || !(p < 0 || p === phase)) return false;
+                seen.add(i.type); return true;
+            });
+        };
+        const a = itemsFor(0), b = itemsFor(1);
+        const sameSet = a.length === b.length && a.every(x => b.some(y => y.type === x.type));
+        const variants = sameSet ? (a.length ? [{ phase: -1, items: a }] : [])
+            : [{ phase: 0, items: a }, { phase: 1, items: b }].filter(v => v.items.length);
+
+        variants.forEach(v => {
+            let first = null;
+            for (let i = 0; i <= 30 && !first; i++) {
+                const collect = addDays(startOfDay(now), i);
+                if (collect.getDay() !== d.id || !phaseMatches(v.phase, collect)) continue;
+                const eve = addDays(collect, -1);
+                const start = new Date(eve.getFullYear(), eve.getMonth(), eve.getDate(), h, m);
+                if (start.getTime() > now.getTime()) first = start;
+            }
+            if (!first) return;
+            const list = v.items.map(i => getType(i.type));
+            const body = list.map(t => `${t.icon} ${t.name}${t.desc ? '\n' + t.desc : ''}`).join('\n\n');
+            out.push({
+                key: `${d.id}-${v.phase}`,
+                start: first,
+                end: new Date(first.getTime() + EVENT_MINUTES * 60000),
+                summary: `♻️ Esporre: ${list.map(t => t.name).join(', ')}`,
+                description: `Da esporre stasera per il ritiro di ${d.name.toLowerCase()}:\n\n${body}\n\n— Raccolta Smart`,
+                rrule: `FREQ=WEEKLY;INTERVAL=${v.phase < 0 ? 1 : 2};BYDAY=${dayById(first.getDay()).rrule}`
+            });
         });
     });
     return out;
@@ -882,7 +860,7 @@ return { notifSupported, notifGranted, getRegistration, buildQueue, rebuildRemin
 __m['views/dashboard'] = (function () {
 // Scheda Dashboard: cosa esporre stasera e prossimi ritiri.
 const { dayById } = __m['config'];
-const { state, typeInfo, saveSettings, touch } = __m['state'];
+const { state, typeInfo } = __m['state'];
 const { $, addDays, esc, holidayName, pad, ymd } = __m['util'];
 const { getActiveItemsForDate } = __m['schedule'];
 const { notifGranted } = __m['reminders'];
@@ -911,9 +889,8 @@ function renderDashboard() {
         $('tonightTrash').innerHTML = trashRows(items);
     }
 
-    $('tonightMeta').textContent = settings.notifEnabled && notifGranted()
-        ? `🔔 Promemoria ogni sera alle ${settings.notifTime}`
-        : '';
+    $('tonightMeta').textContent = settings.gcalAlerts ? `📆 Avviso da Google Calendar alle ${settings.notifTime}`
+        : settings.notifEnabled && notifGranted() ? `🔔 Avviso alle ${settings.notifTime}` : '';
 
     let up = '';
     for (let i = 1; i <= 7; i++) {
@@ -927,34 +904,23 @@ function renderDashboard() {
         up += `<div class="upc"><span class="when">${esc(label)} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}${h && its.length ? ` <span title="${esc(h)}">🎉</span>` : ''}</span><span class="what">${what}</span></div>`;
     }
     $('upcoming').innerHTML = up;
-    $('holidayToggle').checked = !!settings.holidays;
 }
 
-const changes = {
-    setHolidays(el) {
-        settings.holidays = el.checked;
-        saveSettings();
-        touch();
-        renderDashboard();
-    }
-};
-
-return { renderedDay, renderDashboard, changes };
+return { renderedDay, renderDashboard };
 })();
 __m['views/schedule-view'] = (function () {
-// Scheda Orari: giorni della settimana e rifiuti ritirati.
+// Scheda Orari: per ogni giorno, una riga compatta per ogni rifiuto ritirato.
 const { DAYS } = __m['config'];
 const { state, getType, saveSchedule, touch } = __m['state'];
-const { $, esc, haptic, parseYMD, toast, ymd } = __m['util'];
+const { $, esc, haptic, toast } = __m['util'];
 
 function renderSchedule() {
-    const container = $('scheduleConfigList');
     const { types, schedule } = state;
     const warn = types.length ? '' : '<p class="muted warn">Non ci sono tipi di rifiuto: creane uno dalla scheda Guida.</p>';
 
-    container.innerHTML = warn + DAYS.map(d => {
+    $('scheduleConfigList').innerHTML = warn + DAYS.map(d => {
         const items = schedule[d.id] || [];
-        const itemsHtml = items.map((item, index) => {
+        const rows = items.map((item, index) => {
             const key = `${d.id}-${index}`;
             const data = `data-day="${d.id}" data-index="${index}"`;
             let opts = types.map(t => `<option value="${esc(t.id)}" ${item.type === t.id ? 'selected' : ''}>${esc(t.icon)} ${esc(t.name)}</option>`).join('');
@@ -962,35 +928,27 @@ function renderSchedule() {
             const alt = item.freq !== 'every';
             return `
             <div class="item">
-                <div class="row between">
-                    <label class="lbl grow" for="t-${key}" style="margin:0">Rifiuto #${index + 1}</label>
-                    <button type="button" class="btn btn-danger btn-sm" data-action="removeItem" ${data} aria-label="Rimuovi rifiuto ${index + 1} di ${esc(d.name)}">✕ Rimuovi</button>
+                <div class="irow">
+                    <select class="grow" aria-label="Rifiuto ${index + 1} di ${esc(d.name)}" data-change="updateItem" data-field="type" ${data}>${opts}</select>
+                    <select class="cad" aria-label="Cadenza" data-change="updateItem" data-field="freq" ${data}>
+                        <option value="every" ${item.freq === 'every' ? 'selected' : ''}>Ogni sett.</option>
+                        <option value="odd" ${item.freq === 'odd' ? 'selected' : ''}>Alterne 1ª/3ª</option>
+                        <option value="even" ${item.freq === 'even' ? 'selected' : ''}>Alterne 2ª/4ª</option>
+                    </select>
+                    <button type="button" class="btn btn-danger icon-btn" data-action="removeItem" ${data} aria-label="Rimuovi rifiuto ${index + 1} di ${esc(d.name)}">✕</button>
                 </div>
-                <select id="t-${key}" data-change="updateItem" data-field="type" ${data}>${opts}</select>
-                <div class="grid2">
-                    <div>
-                        <label class="lbl" for="f-${key}">Cadenza</label>
-                        <select id="f-${key}" data-change="updateItem" data-field="freq" ${data}>
-                            <option value="every" ${item.freq === 'every' ? 'selected' : ''}>Ogni settimana</option>
-                            <option value="odd" ${item.freq === 'odd' ? 'selected' : ''}>Settimane alterne (1ª, 3ª…)</option>
-                            <option value="even" ${item.freq === 'even' ? 'selected' : ''}>Settimane alterne (2ª, 4ª…)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="lbl" for="r-${key}">Data di riferimento</label>
-                        <input type="date" id="r-${key}" value="${esc(item.refDate)}" ${alt ? '' : 'disabled'} data-change="updateItem" data-field="refDate" ${data}>
-                    </div>
-                </div>
-                ${alt ? '<p class="muted">Scegli una data qualsiasi della settimana che conta come «1ª»: da lì le settimane si alternano.</p>' : ''}
+                ${alt ? `<div class="irow"><label class="lbl nowrap" for="r-${key}" style="margin:0">Settimana «1ª» (una data qualsiasi):</label>
+                    <input type="date" id="r-${key}" class="grow" value="${esc(item.refDate)}" data-change="updateItem" data-field="refDate" ${data}></div>
+                    ${item.refDate ? '' : '<p class="warn small">Senza data vale ogni settimana: imposta la data per alternare.</p>'}` : ''}
             </div>`;
         }).join('');
         return `
         <div class="day">
             <div class="row between">
                 <span class="day-name">${esc(d.name)}</span>
-                <button type="button" class="btn btn-primary btn-sm" data-action="addItem" data-day="${d.id}" ${types.length ? '' : 'disabled'} aria-label="Aggiungi rifiuto a ${esc(d.name)}">+ Aggiungi rifiuto</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-action="addItem" data-day="${d.id}" ${types.length ? '' : 'disabled'} aria-label="Aggiungi rifiuto a ${esc(d.name)}">+ Rifiuto</button>
             </div>
-            <div class="stack">${itemsHtml || '<p class="faint">Nessun ritiro programmato per questo giorno.</p>'}</div>
+            ${rows || '<p class="faint">Nessun ritiro.</p>'}
         </div>`;
     }).join('');
 }
@@ -1019,8 +977,6 @@ const changes = {
         if (!item) return;
         const field = el.dataset.field;
         item[field] = el.value;
-        // Le cadenze alterne hanno sempre bisogno di una data di riferimento valida
-        if (item.freq !== 'every' && !parseYMD(item.refDate)) item.refDate = ymd(new Date());
         commit();
         if (field !== 'type') renderSchedule();
         toast('Salvato');
@@ -1155,68 +1111,101 @@ function notifStatus() {
 }
 
 function renderSettings() {
+    // I pannelli apribili restano aperti quando la scheda viene ridisegnata
+    const openKeys = [...document.querySelectorAll('#settingsBody details[open]')].map(d => d.dataset.key);
     const lastSync = settings.gcalLastSync ? new Date(settings.gcalLastSync).toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' }) : '';
     const origin = location.protocol.startsWith('http') ? location.origin : "(apri l'app da un indirizzo https://)";
     const notifOn = settings.notifEnabled && notifGranted();
     const validClientId = /\.apps\.googleusercontent\.com$/.test(settings.gcalClientId);
+    const sw = (id, checked, change, disabled) => `<span class="switch"><input type="checkbox" id="${id}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-change="${change}"><span class="track"></span></span>`;
 
     $('settingsBody').innerHTML = `
         <div class="card">
-            <h3 class="card-title"><span aria-hidden="true">🔔</span> Promemoria</h3>
-            <div>
-                <label class="lbl" for="notifTime">Orario della sera (notifiche ed eventi Calendar)</label>
-                <input type="time" id="notifTime" value="${esc(settings.notifTime)}" data-change="setNotifTime">
+            <h3 class="card-title"><span aria-hidden="true">⏰</span> Promemoria</h3>
+            <div class="row between">
+                <label class="lbl grow" for="notifTime" style="margin:0">Orario della sera</label>
+                <input type="time" id="notifTime" value="${esc(settings.notifTime)}" data-change="setNotifTime" style="width:8.5rem">
             </div>
             <div class="row between">
-                <label for="notifToggle" class="grow strong" style="font-size:.9rem">Avvisami la sera prima</label>
-                <span class="switch"><input type="checkbox" id="notifToggle" ${notifOn ? 'checked' : ''} data-change="toggleNotif"><span class="track"></span></span>
+                <label for="holidayToggle" class="grow"><span class="strong">Segnala i festivi</span><br><span class="muted">Avvisa se il giorno dopo è festa nazionale</span></label>
+                ${sw('holidayToggle', settings.holidays, 'setHolidays')}
             </div>
-            <p class="muted">${esc(notifStatus())}</p>
-            <button class="btn btn-ghost btn-block" data-action="sendTest">Invia notifica di prova</button>
-
+            <div class="row between">
+                <label for="notifToggle" class="grow"><span class="strong">Notifiche dell'app</span><br><span class="muted">${esc(settings.gcalAlerts ? "Disattivate: gli avvisi arrivano da Google Calendar" : notifStatus())}</span></label>
+                ${sw('notifToggle', notifOn, 'toggleNotif', settings.gcalAlerts)}
+            </div>
+            ${notifOn ? '<button class="btn btn-ghost btn-sm" data-action="sendTest">Invia notifica di prova</button>' : ''}
         </div>
 
         <div class="card">
             <h3 class="card-title"><span aria-hidden="true">📆</span> Google Calendar</h3>
-            <p class="muted">Crea eventi ricorrenti la sera prima di ogni ritiro, con la descrizione dei rifiuti da mettere fuori e il promemoria di Calendar.</p>
-            ${settings.gcalDirty ? '<p class="warn muted strong">⚠️ Hai modificato orari, tipi o promemoria dopo l\'ultima sincronizzazione: risincronizza per aggiornare Calendar.</p>' : ''}
-            <div>
-                <label class="lbl" for="gcalReminder">Promemoria di Calendar</label>
-                <select id="gcalReminder" data-change="setGcalReminder">
+            <p class="muted">Un evento per ogni sera di esposizione, con la descrizione dei rifiuti da mettere fuori.</p>
+            ${settings.gcalDirty ? '<p class="warn small strong">⚠️ Orari, tipi o promemoria modificati: risincronizza Calendar.</p>' : ''}
+            <div class="row between">
+                <label for="gcalAlerts" class="grow"><span class="strong">Avvisi da Google Calendar</span><br><span class="muted">Spegne le notifiche dell'app per non averli doppi</span></label>
+                ${sw('gcalAlerts', settings.gcalAlerts, 'toggleGcalAlerts')}
+            </div>
+            <div class="row between">
+                <label class="lbl grow" for="gcalReminder" style="margin:0">Promemoria</label>
+                <select id="gcalReminder" data-change="setGcalReminder" style="width:11rem">
                     ${REMINDER_OPTIONS.map(([v, l]) => `<option value="${v}" ${Number(settings.gcalReminder) === v ? 'selected' : ''}>${l}</option>`).join('')}
                 </select>
             </div>
-            <button class="btn btn-primary btn-block" data-action="openLinks">Aggiungi a Google Calendar</button>
-            <button class="btn btn-ghost btn-block" data-action="downloadICS">Scarica file .ics (Calendar, Apple, Outlook)</button>
+            <div class="grid2">
+                <button class="btn btn-primary" data-action="openLinks">Apri in Calendar</button>
+                <button class="btn btn-ghost" data-action="downloadICS">File .ics</button>
+            </div>
+            <p class="muted small">Aggiungili <b>una sola volta</b>: se li hai già aggiunti, elimina prima i vecchi eventi «Esporre» da Calendar (il file .ics aggiorna da solo gli eventi già importati).</p>
 
-            <details open>
+            <details data-key="gsync">
                 <summary>Sincronizzazione automatica con il tuo account Google</summary>
                 <div class="stack">
-                    <p class="muted">Collega il tuo account Google: gli eventi vengono creati e aggiornati direttamente. Serve un ID client OAuth personale (gratuito):</p>
-                    <ol class="steps">
-                        <li>Apri <code>console.cloud.google.com</code>, crea un progetto e abilita <b>Google Calendar API</b>.</li>
-                        <li>In «Schermata consenso OAuth» scegli «Esterno» e aggiungi il tuo account Google tra gli utenti di test.</li>
-                        <li>In «Credenziali» crea un <b>ID client OAuth → Applicazione web</b>.</li>
-                        <li>Tra le «Origini JavaScript autorizzate» inserisci: <code>${esc(origin)}</code></li>
-                        <li>Incolla qui sotto l'ID client (termina con <code>.apps.googleusercontent.com</code>).</li>
-                    </ol>
+                    <p class="muted">Crea e aggiorna gli eventi da solo, senza duplicati. Serve un ID client OAuth personale (gratuito).</p>
                     <div>
                         <label class="lbl" for="gcalClientId">ID client OAuth</label>
                         <input type="text" id="gcalClientId" value="${esc(settings.gcalClientId)}" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off" autocapitalize="off" spellcheck="false" data-change="setClientId">
                     </div>
-                    <button class="btn btn-primary btn-block" data-action="gcalSync" ${validClientId ? '' : 'disabled'}>Connetti e sincronizza</button>
-                    ${settings.gcalSynced ? `<p class="muted">Ultima sincronizzazione: ${esc(lastSync)}</p><button class="btn btn-danger btn-block" data-action="gcalRemove">Rimuovi eventi da Google Calendar</button>` : ''}
+                    <div class="grid2">
+                        <button class="btn btn-primary" data-action="gcalSync" ${validClientId ? '' : 'disabled'}>Connetti e sincronizza</button>
+                        ${settings.gcalSynced ? '<button class="btn btn-danger" data-action="gcalRemove">Rimuovi eventi</button>' : ''}
+                    </div>
+                    ${settings.gcalSynced ? `<p class="muted small">Ultima sincronizzazione: ${esc(lastSync)}</p>` : ''}
+                    <details data-key="gsteps">
+                        <summary>Come ottenere l'ID client</summary>
+                        <ol class="steps">
+                            <li>Apri <code>console.cloud.google.com</code>, crea un progetto e abilita <b>Google Calendar API</b>.</li>
+                            <li>«Schermata consenso OAuth» → «Esterno», aggiungi il tuo account tra gli utenti di test.</li>
+                            <li>«Credenziali» → <b>ID client OAuth → Applicazione web</b>.</li>
+                            <li>«Origini JavaScript autorizzate»: <code>${esc(origin)}</code></li>
+                            <li>Incolla qui l'ID client (finisce con <code>.apps.googleusercontent.com</code>).</li>
+                        </ol>
+                    </details>
                 </div>
             </details>
         </div>
 
         <div class="card">
-            <h3 class="card-title"><span aria-hidden="true">🧰</span> Dati</h3>
-            <p class="muted">Reimposta orari, tipi di rifiuto e impostazioni ai valori iniziali.</p>
-            <button class="btn btn-danger btn-block" data-action="resetAll">Ripristina impostazioni predefinite</button>
-        </div>
+            <div class="row between">
+                <span class="muted">Raccolta Smart v${esc(APP_VERSION)}</span>
+                <button class="btn btn-danger btn-sm" data-action="resetAll">Ripristina tutto</button>
+            </div>
+        </div>`;
+    openKeys.forEach(k => { const d = document.querySelector(`#settingsBody details[data-key="${k}"]`); if (d) d.open = true; });
+}
 
-        <p class="muted" style="text-align:center">Raccolta Smart v${esc(APP_VERSION)}</p>`;
+// Gli avvisi arrivano da Calendar: spegne le notifiche dell'app per evitare i doppioni
+async function useCalendarAlerts() {
+    settings.gcalAlerts = true;
+    saveSettings();
+    if (settings.notifEnabled) await disableNotifications();
+}
+async function offerCalendarAlerts() {
+    if (settings.gcalAlerts || !settings.notifEnabled) return;
+    setTimeout(async () => {
+        if (await askConfirm("Se aggiungi gli eventi a Google Calendar riceverai gli avvisi da lì. Disattivo le notifiche dell'app per non averli doppi?", 'Disattiva')) {
+            await useCalendarAlerts(); renderSettings();
+        }
+    }, 600);
 }
 
 // Esegue un'operazione asincrona mostrando eventuali errori, poi ridisegna la scheda
@@ -1234,17 +1223,20 @@ const actions = {
         $('linksList').innerHTML = evs.map(ev => `
             <a class="btn btn-primary" href="${esc(calendarTemplateUrl(ev))}" target="_blank" rel="noopener">${esc(ev.summary)}<br><span style="font-weight:500;font-size:.75rem">dalle ${pad(ev.start.getHours())}:${pad(ev.start.getMinutes())} · ${esc(dayById(ev.start.getDay()).name)} sera</span></a>`).join('');
         $('linksDialog').showModal();
+        offerCalendarAlerts();
     },
 
     downloadICS() {
         if (!buildEventGroups().length) { toast('Nessun ritiro da esportare'); return; }
         downloadICS();
         toast('File .ics scaricato: aprilo per importarlo in Google Calendar');
+        offerCalendarAlerts();
     },
 
     async gcalSync() {
         await run(async () => {
             const n = await syncGoogleCalendar();
+            if (n) await useCalendarAlerts();
             toast(n ? `Sincronizzati ${n} eventi ricorrenti su Google Calendar` : 'Eventi rimossi: nessun ritiro da sincronizzare');
         });
     },
@@ -1272,6 +1264,17 @@ const changes = {
         renderSettings();
         toast(`Orario promemoria: ${el.value}`);
     },
+
+    setHolidays(el) {
+        settings.holidays = el.checked;
+        saveSettings();
+        touch();
+    },
+
+    toggleGcalAlerts: el => run(async () => {
+        if (el.checked) await useCalendarAlerts();
+        else { settings.gcalAlerts = false; saveSettings(); }
+    }),
 
     toggleNotif: el => run(() => (el.checked ? enableNotifications() : disableNotifications())),
 
@@ -1332,7 +1335,6 @@ const actions = {
     closeDialog: el => $(el.dataset.target).close()
 };
 const changes = {
-    ...dashboard.changes,
     ...scheduleView.changes,
     ...settingsView.changes
 };
