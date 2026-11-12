@@ -1,349 +1,138 @@
 <!DOCTYPE html>
-<html lang="it" class="dark">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Raccolta Smart PWA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Raccolta Smart</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <meta name="theme-color" content="#065f46">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { 50: '#ecfdf5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#065f46' }
-                    }
-                }
-            }
-        }
-    </script>
+    <meta name="color-scheme" content="dark">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Raccolta Smart">
+    <link rel="stylesheet" href="css/app.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white pb-20">
+<body>
 
-    <!-- Header -->
-    <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 shadow-md">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <h1 class="font-extrabold text-lg text-emerald-400 flex items-center gap-2">
-                <span>♻️</span> Raccolta Smart
-            </h1>
-            <div class="flex items-center gap-2">
-                <span id="syncStatus" class="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Offline</span>
-            </div>
+    <header>
+        <div class="wrap header-row">
+            <h1 class="brand"><span class="logo" aria-hidden="true">♻️</span><span>Raccolta Smart</span><span class="ver" id="appVersion" title="Versione dell'app"></span></h1>
+            <span id="syncStatus" class="pill" role="status">Offline</span>
         </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="max-w-md mx-auto w-full p-4 flex-1 space-y-4">
-        
-        <!-- TAB 1: DASHBOARD -->
-        <section id="tab-dashboard" class="space-y-4">
-            <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-3">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <span>🌙</span> Da esporre stasera
-                </h2>
-                <div id="tonightTrash" class="text-lg font-medium text-slate-200">
-                    Caricamento in corso...
+    <main>
+        <!-- DASHBOARD -->
+        <section id="tab-dashboard">
+            <div class="card">
+                <h2 class="card-title"><span aria-hidden="true">🌙</span> Da esporre stasera</h2>
+                <div id="tonightTrash">Caricamento…</div>
+                <div id="tonightMeta" class="muted"></div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title"><span aria-hidden="true">📅</span> Prossimi ritiri</h2>
+                <div id="upcoming"></div>
+            </div>
+
+            <div class="card tight row between">
+                <div class="grow">
+                    <label for="holidayToggle" class="strong" style="display:block;font-size:.9rem">Festivi nazionali</label>
+                    <span class="muted">Segnala i ritiri che cadono in giorni festivi</span>
                 </div>
+                <span class="switch"><input type="checkbox" id="holidayToggle" data-change="setHolidays"><span class="track"></span></span>
             </div>
+        </section>
 
-            <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-3">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <span>🌅</span> Domani mattina
-                </h2>
-                <div id="tomorrowTrash" class="text-lg font-medium text-slate-200">
-                    Caricamento in corso...
+        <!-- ORARI -->
+        <section id="tab-schedule" hidden>
+            <div>
+                <h2 class="page-title">Configurazione orari</h2>
+                <p class="muted">Indica il giorno in cui passa il ritiro. Le modifiche si salvano da sole.</p>
+            </div>
+            <div id="scheduleConfigList" class="stack" style="gap:12px"></div>
+        </section>
+
+        <!-- GUIDA / TIPI -->
+        <section id="tab-guide" hidden>
+            <div class="row between">
+                <div class="grow">
+                    <h2 class="page-title">Guida ai rifiuti</h2>
+                    <p class="muted">Gestisci i tipi di rifiuto: nome, icona e descrizione.</p>
                 </div>
+                <button class="btn btn-primary btn-sm" data-action="newType">+ Nuovo tipo</button>
             </div>
-
-            <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
-                <div>
-                    <span class="text-sm font-bold text-slate-200 block">Festivi Nazionali</span>
-                    <span class="text-xs text-slate-400">Considera festivi e sospensioni</span>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="holidayToggle" checked onchange="updateDashboard()" class="sr-only peer">
-                    <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-                </label>
-            </div>
+            <div id="guideList" class="stack"></div>
+            <button class="btn btn-ghost btn-block" data-action="restoreTypes">Ripristina i tipi predefiniti</button>
         </section>
 
-        <!-- TAB 2: SCHEDULE (ORARI) -->
-        <section id="tab-schedule" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="font-bold text-base text-slate-200">Configurazione Orari</h2>
-                <button onclick="saveSchedule()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow cursor-pointer">Salva Configurazione</button>
-            </div>
-            <div id="scheduleConfigList" class="space-y-3">
-                <!-- Generato dinamicamente -->
-            </div>
+        <!-- IMPOSTAZIONI -->
+        <section id="tab-settings" hidden>
+            <h2 class="page-title">Impostazioni</h2>
+            <div id="settingsBody" class="stack" style="gap:16px"></div>
         </section>
-
-        <!-- TAB 3: GUIDE -->
-        <section id="tab-guide" class="hidden space-y-4">
-            <h2 class="font-bold text-base text-slate-200">Guida ai Rifiuti</h2>
-            <div id="guideList" class="space-y-2">
-                <!-- Generato dinamicamente -->
-            </div>
-        </section>
-
-        <!-- TAB 4: SETTINGS -->
-        <section id="tab-settings" class="hidden space-y-4">
-            <h2 class="font-bold text-base text-slate-200">Impostazioni</h2>
-            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-3 text-sm">
-                <p class="text-slate-400 text-xs">Gestione dati applicazione e reset configurazioni di fabbrica.</p>
-                <button onclick="resetData()" class="w-full py-2.5 bg-red-600/20 text-red-400 border border-red-700/50 hover:bg-red-600/30 font-bold rounded-xl transition text-xs">Ripristina Impostazioni Predefinite</button>
-            </div>
-        </section>
-
     </main>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="bg-slate-900 border-t border-slate-800 fixed bottom-0 left-0 right-0 z-50 px-2 py-2">
-        <div class="max-w-md mx-auto flex justify-around gap-1 text-xs">
-            <button id="btn-dashboard" onclick="switchTab('dashboard')" class="flex-1 py-2 px-2 text-center rounded-lg bg-emerald-600 text-white transition shadow whitespace-nowrap font-medium">Dashboard</button>
-            <button id="btn-schedule" onclick="switchTab('schedule')" class="flex-1 py-2 px-2 text-center rounded-lg text-slate-300 hover:text-white transition whitespace-nowrap font-medium">Orari</button>
-            <button id="btn-guide" onclick="switchTab('guide')" class="flex-1 py-2 px-2 text-center rounded-lg text-slate-300 hover:text-white transition whitespace-nowrap font-medium">Guida</button>
-            <button id="btn-settings" onclick="switchTab('settings')" class="flex-1 py-2 px-2 text-center rounded-lg text-slate-300 hover:text-white transition whitespace-nowrap font-medium">Impostazioni</button>
+    <nav aria-label="Navigazione principale">
+        <div class="wrap">
+            <button id="btn-dashboard" data-action="switchTab" data-tab="dashboard"><span class="ni" aria-hidden="true">🏠</span>Dashboard</button>
+            <button id="btn-schedule" data-action="switchTab" data-tab="schedule"><span class="ni" aria-hidden="true">🗓️</span>Orari</button>
+            <button id="btn-guide" data-action="switchTab" data-tab="guide"><span class="ni" aria-hidden="true">📖</span>Guida</button>
+            <button id="btn-settings" data-action="switchTab" data-tab="settings"><span class="ni" aria-hidden="true">⚙️</span>Impostazioni</button>
         </div>
     </nav>
 
-    <!-- JavaScript Application Logic -->
-    <script>
-        const trashTypes = [
-            { id: 'indifferenziato', name: 'Indifferenziato', icon: '🗑️' },
-            { id: 'organico', name: 'Organico', icon: '🍌' },
-            { id: 'carta', name: 'Carta e Cartone', icon: '📦' },
-            { id: 'plastica', name: 'Plastica e Metalli', icon: '🍼' },
-            { id: 'vetro', name: 'Vetro', icon: '🍾' }
-        ];
+    <!-- Dialog: modifica tipo -->
+    <dialog id="typeDialog" aria-labelledby="typeDialogTitle">
+        <form method="dialog" id="typeForm">
+            <h3 id="typeDialogTitle">Nuovo tipo di rifiuto</h3>
+            <div>
+                <label class="lbl" for="typeName">Nome</label>
+                <input type="text" id="typeName" maxlength="40" required autocomplete="off" placeholder="Es. Verde e sfalci">
+            </div>
+            <div>
+                <label class="lbl" for="typeIcon">Icona (emoji)</label>
+                <input type="text" id="typeIcon" maxlength="8" autocomplete="off" placeholder="♻️">
+                <div class="emoji-pick" id="emojiPick" style="margin-top:8px"></div>
+            </div>
+            <div>
+                <label class="lbl" for="typeDesc">Descrizione (cosa conferire e come esporlo)</label>
+                <textarea id="typeDesc" maxlength="400" placeholder="Es. Sfalci e potature, in sacchi o fascine legate."></textarea>
+                <p class="muted" style="margin-top:4px">Compare nelle notifiche e nell'evento di Google Calendar.</p>
+            </div>
+            <div class="err" id="typeErr" role="alert"></div>
+            <div class="grid2">
+                <button type="button" class="btn btn-ghost" data-action="closeDialog" data-target="typeDialog">Annulla</button>
+                <button type="submit" class="btn btn-primary">Salva</button>
+            </div>
+        </form>
+    </dialog>
 
-        const days = [
-            { id: 1, name: 'Lunedì' },
-            { id: 2, name: 'Martedì' },
-            { id: 3, name: 'Mercoledì' },
-            { id: 4, name: 'Giovedì' },
-            { id: 5, name: 'Venerdì' },
-            { id: 6, name: 'Sabato' },
-            { id: 0, name: 'Domenica' }
-        ];
+    <!-- Dialog: conferma -->
+    <dialog id="confirmDialog" aria-labelledby="confirmMsg">
+        <div class="dlg-body">
+            <p id="confirmMsg" class="strong"></p>
+            <div class="grid2">
+                <button type="button" class="btn btn-ghost" id="confirmNo">Annulla</button>
+                <button type="button" class="btn btn-danger" id="confirmYes">Conferma</button>
+            </div>
+        </div>
+    </dialog>
 
-        let userSchedule = JSON.parse(localStorage.getItem('raccolta_smart_schedule_multi')) || {
-            1: [{ type: 'organico', freq: 'every', refDate: '' }],
-            2: [{ type: 'plastica', freq: 'every', refDate: '' }],
-            3: [{ type: 'organico', freq: 'every', refDate: '' }, { type: 'vetro', freq: 'every', refDate: '' }],
-            4: [{ type: 'carta', freq: 'every', refDate: '' }],
-            5: [{ type: 'organico', freq: 'every', refDate: '' }],
-            6: [{ type: 'indifferenziato', freq: 'every', refDate: '' }],
-            0: []
-        };
+    <!-- Dialog: link Google Calendar -->
+    <dialog id="linksDialog" aria-labelledby="linksTitle">
+        <div class="dlg-body">
+            <h3 id="linksTitle">Aggiungi a Google Calendar</h3>
+            <p class="muted">Ogni pulsante apre Google Calendar con l'evento già compilato (si ripete ogni settimana). Controlla e premi «Salva».</p>
+            <div id="linksList" class="stack"></div>
+            <button type="button" class="btn btn-ghost" data-action="closeDialog" data-target="linksDialog">Chiudi</button>
+        </div>
+    </dialog>
 
-        function triggerHaptic(duration = 20) {
-            if (navigator.vibrate) {
-                navigator.vibrate(duration);
-            }
-        }
+    <div id="toast" role="status" aria-live="polite" hidden></div>
 
-        function switchTab(tabId) {
-            triggerHaptic(20);
-            ['dashboard', 'schedule', 'guide', 'settings'].forEach(t => {
-                const tabEl = document.getElementById(`tab-${t}`);
-                const btnEl = document.getElementById(`btn-${t}`);
-                if (tabEl) tabEl.classList.add('hidden');
-                if (btnEl) btnEl.className = "flex-1 py-2 px-2 text-center rounded-lg text-slate-300 hover:text-white transition whitespace-nowrap font-medium";
-            });
-            const selectedTab = document.getElementById(`tab-${tabId}`);
-            const selectedBtn = document.getElementById(`btn-${tabId}`);
-            if (selectedTab) selectedTab.classList.remove('hidden');
-            if (selectedBtn) selectedBtn.className = "flex-1 py-2 px-2 text-center rounded-lg bg-emerald-600 text-white transition shadow whitespace-nowrap font-medium";
-            
-            if (tabId === 'schedule') {
-                initScheduleUI();
-            } else if (tabId === 'dashboard') {
-                updateDashboard();
-            } else if (tabId === 'guide') {
-                initGuideUI();
-            }
-        }
-
-        function getTrashInfo(typeId) {
-            return trashTypes.find(t => t.id === typeId) || { name: typeId, icon: '♻️' };
-        }
-
-        function isItalianHoliday(date) {
-            const m = date.getMonth() + 1;
-            const d = date.getDate();
-            const fixed = ['1-1', '6-1', '25-4', '1-5', '2-6', '15-8', '1-11', '8-12', '25-12', '26-12'];
-            return fixed.includes(`${d}-${m}`);
-        }
-
-        function getActiveItemsForDate(targetDate) {
-            const dayOfWeek = targetDate.getDay();
-            const items = userSchedule[dayOfWeek] || [];
-            return items.filter(item => {
-                if (!item.freq || item.freq === 'every') return true;
-                if (!item.refDate) return true;
-                const ref = new Date(item.refDate);
-                const diffWeeks = Math.floor((targetDate - ref) / (7 * 24 * 60 * 60 * 1000));
-                if (diffWeeks < 0) return false;
-                if (item.freq === 'odd') return diffWeeks % 2 === 0;
-                if (item.freq === 'even') return diffWeeks % 2 === 1;
-                return true;
-            });
-        }
-
-        function updateDashboard() {
-            const now = new Date();
-            const tomorrow = new Date(now);
-            tomorrow.setDate(now.getDate() + 1);
-
-            const checkHolidays = document.getElementById('holidayToggle')?.checked ?? true;
-            const isTomorrowHoliday = checkHolidays && isItalianHoliday(tomorrow);
-
-            const activeItems = getActiveItemsForDate(tomorrow);
-
-            const tonightEl = document.getElementById('tonightTrash');
-            const tomorrowEl = document.getElementById('tomorrowTrash');
-
-            if (!tonightEl || !tomorrowEl) return;
-
-            if (isTomorrowHoliday && activeItems.length > 0) {
-                tonightEl.innerHTML = `<span class="text-xl">🚨</span> Domani è festivo: Ritiro sospeso!`;
-                tomorrowEl.innerHTML = `<span class="text-xl">🛡️</span> Ritiro posticipato per festività.`;
-            } else if (!activeItems || activeItems.length === 0) {
-                tonightEl.innerHTML = `<span class="text-xl">✨</span> Nessun rifiuto da esporre stasera.`;
-                tomorrowEl.innerHTML = `<span class="text-xl">💤</span> Nessun ritiro programmato per domani.`;
-            } else {
-                let htmlContent = '';
-                activeItems.forEach(item => {
-                    let info = getTrashInfo(item.type);
-                    htmlContent += `<div class="flex items-center gap-2.5 py-0.5"><span class="text-2xl">${info.icon}</span> <span class="font-bold text-slate-100">${info.name}</span></div>`;
-                });
-                tonightEl.innerHTML = `<div class="space-y-1">${htmlContent}</div>`;
-                tomorrowEl.innerHTML = `<div class="space-y-1">${htmlContent}</div>`;
-            }
-        }
-
-        function initScheduleUI() {
-            const container = document.getElementById('scheduleConfigList');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            days.forEach(d => {
-                const items = userSchedule[d.id] || [];
-                let itemsHtml = '';
-                
-                items.forEach((item, index) => {
-                    let optionsHtml = '';
-                    trashTypes.forEach(t => {
-                        optionsHtml += `<option value="${t.id}" ${item.type === t.id ? 'selected' : ''}>${t.icon} ${t.name}</option>`;
-                    });
-
-                    itemsHtml += `
-                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 space-y-2 relative">
-                            <button type="button" onclick="removeScheduleItem(${d.id}, ${index})" class="absolute top-2 right-2 text-red-400 hover:text-red-300 font-bold text-xs px-2 py-1 bg-slate-800 rounded-lg cursor-pointer">✕ Rimuovi</button>
-                            <div class="flex justify-between items-center font-bold text-sm text-emerald-400 pr-20">
-                                <span>Rifiuto #${index + 1}</span>
-                                <select onchange="updateItemField(${d.id}, ${index}, 'type', this.value)" class="bg-slate-800 text-slate-100 p-2 rounded-lg border border-slate-700 text-xs">
-                                    ${optionsHtml}
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div>
-                                    <label class="block text-slate-400 mb-1">Cadenza:</label>
-                                    <select onchange="updateItemField(${d.id}, ${index}, 'freq', this.value)" class="w-full bg-slate-800 text-slate-200 p-1.5 rounded-lg border border-slate-700">
-                                        <option value="every" ${item.freq === 'every' ? 'selected' : ''}>Ogni settimana</option>
-                                        <option value="odd" ${item.freq === 'odd' ? 'selected' : ''}>1ª e 3ª settimana</option>
-                                        <option value="even" ${item.freq === 'even' ? 'selected' : ''}>2ª e 4ª settimana</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-slate-400 mb-1">Data Inizio:</label>
-                                    <input type="date" value="${item.refDate || ''}" onchange="updateItemField(${d.id}, ${index}, 'refDate', this.value)" class="w-full bg-slate-800 text-slate-200 p-1.5 rounded-lg border border-slate-700 text-xs">
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                let div = document.createElement('div');
-                div.className = "bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-3 shadow";
-                div.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-emerald-400 text-sm">${d.name}</span>
-                        <button type="button" onclick="addScheduleItem(${d.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition shadow cursor-pointer">+ Aggiungi Rifiuto</button>
-                    </div>
-                    <div class="space-y-2">
-                        ${itemsHtml.length > 0 ? itemsHtml : '<p class="text-xs text-slate-500 italic">Nessun ritiro programmato per questo giorno.</p>'}
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function addScheduleItem(dayId) {
-            triggerHaptic(20);
-            if (!userSchedule[dayId]) userSchedule[dayId] = [];
-            userSchedule[dayId].push({ type: 'organico', freq: 'every', refDate: '' });
-            initScheduleUI();
-        }
-
-        function removeScheduleItem(dayId, index) {
-            triggerHaptic(20);
-            if (userSchedule[dayId]) {
-                userSchedule[dayId].splice(index, 1);
-                initScheduleUI();
-            }
-        }
-
-        function updateItemField(dayId, index, field, value) {
-            if (userSchedule[dayId] && userSchedule[dayId][index]) {
-                userSchedule[dayId][index][field] = value;
-            }
-        }
-
-        function saveSchedule() {
-            triggerHaptic([50, 50, 50]);
-            localStorage.setItem('raccolta_smart_schedule_multi', JSON.stringify(userSchedule));
-            updateDashboard();
-            alert("Configurazione orari salvata con successo!");
-            switchTab('dashboard');
-        }
-
-        function initGuideUI() {
-            const guideList = document.getElementById('guideList');
-            if (!guideList) return;
-            guideList.innerHTML = '';
-            trashTypes.forEach(t => {
-                let div = document.createElement('div');
-                div.className = "bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex items-center gap-3";
-                div.innerHTML = `<span class="text-2xl">${t.icon}</span> <div><div class="font-bold text-sm text-slate-200">${t.name}</div><div class="text-xs text-slate-400">Smaltimento conforme alle direttive comunali.</div></div>`;
-                guideList.appendChild(div);
-            });
-        }
-
-        function resetData() {
-            if (confirm("Vuoi davvero ripristinare le impostazioni iniziali?")) {
-                localStorage.removeItem('raccolta_smart_schedule_multi');
-                location.reload();
-            }
-        }
-
-        // Registrazione Service Worker per PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('ServiceWorker registrato:', reg.scope))
-                    .catch(err => console.log('ServiceWorker fallito:', err));
-            });
-        }
-
-        // Avvio iniziale
-        window.addEventListener('DOMContentLoaded', () => {
-            updateDashboard();
-        });
-    </script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

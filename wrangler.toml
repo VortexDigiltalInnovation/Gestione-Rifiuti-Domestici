@@ -1,0 +1,17 @@
+name = "raccolta-smart-push"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# Ogni minuto: invia i push scaduti
+[triggers]
+crons = ["* * * * *"]
+
+[vars]
+# Contatto richiesto dai servizi push (Apple lo controlla): metti la tua email
+VAPID_SUBJECT = "mailto:TUA-EMAIL@esempio.it"
+# Opzionale: indirizzo dell'app per restringere il CORS, es. "https://tuonome.github.io"
+# ALLOWED_ORIGIN = "https://tuonome.github.io"
+
+[[kv_namespaces]]
+binding = "PUSH_KV"
+id = "INCOLLA-QUI-L-ID-DEL-KV"
