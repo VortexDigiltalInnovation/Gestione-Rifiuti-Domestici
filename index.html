@@ -273,7 +273,7 @@ dialog h3 { font-size: 1rem; }
 const __m = {};
 __m['config'] = (function () {
 // Costanti e valori predefiniti dell'app.
-const APP_VERSION = '6.2.0';
+const APP_VERSION = '6.2.1';
 
 const KEYS = {
     types: 'raccolta_smart_types',
@@ -286,8 +286,8 @@ const EVENT_MINUTES = 30;   // durata degli eventi di Calendar
 const QUEUE_DAYS = 21;      // quanti giorni di notifiche pianificare in anticipo
 
 const DEFAULT_TYPES = [
-    { id: 'indifferenziato', name: 'Indifferenziato', icon: '🗑️', desc: 'Rifiuti non riciclabili: pannolini, cocci di ceramica, polvere, mozziconi, giocattoli rotti. Esporre il sacco ben chiuso.' },
-    { id: 'organico', name: 'Organico', icon: '🍌', desc: 'Avanzi di cibo, scarti di frutta e verdura, fondi di caffè, tovaglioli sporchi. Usare sacchetti compostabili ed esporre il mastello.' },
+    { id: 'indifferenziato', name: 'Indifferenziato', icon: '🗑️', desc: 'Rifiuti non riciclabili: pannolini, cocci di ceramica, polvere, mozziconi, giocattoli rotti. Sacco ben chiuso.' },
+    { id: 'organico', name: 'Organico', icon: '🍌', desc: 'Avanzi di cibo, scarti di frutta e verdura, fondi di caffè, tovaglioli sporchi. Usare sacchetti compostabili nel mastello.' },
     { id: 'carta', name: 'Carta e Cartone', icon: '📦', desc: 'Giornali, riviste, scatole di cartone piegate e schiacciate, cartoni della pizza puliti. Senza sacchetti di plastica.' },
     { id: 'plastica', name: 'Plastica e Metalli', icon: '🍼', desc: 'Bottiglie, flaconi, vaschette, lattine e barattoli di metallo. Svuotare e schiacciare i contenitori prima di esporli.' },
     { id: 'vetro', name: 'Vetro', icon: '🍾', desc: 'Bottiglie, vasetti e barattoli di vetro, vuoti e senza tappo. Niente ceramica, cristallo o lampadine.' }
@@ -551,8 +551,8 @@ function buildEventGroups() {
                 key: `${d.id}-${v.phase}`,
                 start: first,
                 end: new Date(first.getTime() + EVENT_MINUTES * 60000),
-                summary: `♻️ Esporre: ${list.map(t => t.name).join(', ')}`,
-                description: `Da esporre stasera per il ritiro di ${d.name.toLowerCase()}:\n\n${body}\n\n— Raccolta Smart`,
+                summary: `♻️ ${list.map(t => t.name).join(', ')}`,
+                description: `Ritiro di ${d.name.toLowerCase()}:\n\n${body}\n\n— Raccolta Smart`,
                 rrule: `FREQ=WEEKLY;INTERVAL=${v.phase < 0 ? 1 : 2};BYDAY=${dayById(first.getDay()).rrule}`
             });
         });
@@ -779,7 +779,7 @@ function buildQueue() {
         out.push({
             id: ymd(eve),
             fireAt: eve.getTime(),
-            title: `♻️ Da esporre per domani: ${items.map(it => getType(it.type).name).join(', ')}`,
+            title: `♻️ ${items.map(it => getType(it.type).name).join(', ')}`,
             body
         });
     }
@@ -842,7 +842,8 @@ async function sendTestNotification() {
     if (!reg) throw new Error('Service worker non disponibile.');
     const items = getActiveItemsForDate(addDays(new Date(), 1), true);
     const body = items.length ? items.map(i => { const t = getType(i.type); return `${t.icon} ${t.name}`; }).join('\n') : 'Notifica di prova: tutto funziona!';
-    await reg.showNotification('♻️ Raccolta Smart', {
+    const title = items.length ? `♻️ ${items.map(i => getType(i.type).name).join(', ')}` : '♻️ Raccolta Smart';
+    await reg.showNotification(title, {
         body,
         icon: new URL('icon-192.png', reg.scope).href,
         badge: new URL('icon-192.png', reg.scope).href,
